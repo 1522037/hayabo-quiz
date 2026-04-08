@@ -225,6 +225,7 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+// ★ '0.0.0.0' を追加して、クラウドの外部通信を受け付けるようにする
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`サーバーが起動しました: ポート ${PORT}`);
 });
