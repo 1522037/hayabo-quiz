@@ -224,8 +224,14 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-// ★ '0.0.0.0' を追加して、クラウドの外部通信を受け付けるようにする
+// ▼▼▼ ここから下を上書き ▼▼▼
+
+// 診断用のテストURL（サーバーが生きているか確認するため）
+app.get('/ping', (req, res) => {
+    res.send('サーバーは正常に動いています！（通信大成功🎉）');
+});
+
+const PORT = process.env.PORT || 10000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`サーバーが起動しました: ポート ${PORT}`);
 });
