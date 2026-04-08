@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>運営元情報 - Hayabo</title>
+    <style>
+        :root { 
+            --bg-color: #ffffff; 
+            --primary-color: #000000; 
+            --text-color: #333333; 
+            --text-light: #666666;
+            --body-font: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; 
+            --title-font: 'Academy Engraved LET', serif; 
+        }
+        
+        body { font-family: var(--body-font); padding: 0; background-color: var(--bg-color); color: var(--text-color); margin: 0; min-height: 100vh; line-height: 1.8; }
+        
+        /* ヘッダー */
+        .header { text-align: center; padding: 20px 15px; border-bottom: 1px solid #eee; }
+        .logo a { font-family: var(--title-font); font-size: 28px; color: var(--primary-color); text-decoration: none; letter-spacing: 0.05em; font-weight: bold; }
+        
+        /* メインコンテンツ */
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px 80px; }
+        h1 { font-family: var(--body-font); font-size: 24px; text-align: center; margin-bottom: 40px; letter-spacing: 0.1em; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 10px; }
+        
+        .content-wrap { text-align: left; }
+        h2 { font-size: 18px; color: var(--primary-color); margin-top: 40px; margin-bottom: 15px; border-left: 4px solid #000; padding-left: 10px; }
+        p { font-size: 14px; color: var(--text-light); margin-bottom: 15px; }
+
+        /* プロフィールカードのスタイル */
+        .profile-card { background: #f9f9f9; border-radius: 12px; padding: 30px; margin: 30px 0; border: 1px solid #eee; text-align: center; }
+        .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 2px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .profile-name { font-size: 20px; font-weight: bold; color: var(--text-color); margin-bottom: 15px; letter-spacing: 0.05em; }
+        .profile-desc { text-align: left; font-size: 14px; color: var(--text-light); line-height: 1.8; margin: 0; }
+        
+        /* 連絡先ボックス */
+        .contact-box { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #ddd; text-align: center; margin-top: 20px; }
+        .contact-email { font-size: 18px; font-weight: bold; color: var(--primary-color); text-decoration: none; word-break: break-all; }
+        .contact-email:hover { text-decoration: underline; }
+
+        /* 戻るボタン */
+        .back-btn { display: inline-block; margin-top: 50px; padding: 14px 40px; background: #fff; color: #000; border: 1px solid #000; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.2s; text-align: center; font-size: 15px; letter-spacing: 0.05em; }
+        .back-btn:hover { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <div class="logo"><a href="/">Hayabo</a></div>
+    </div>
+
+    <div class="container">
+        <div style="text-align: center;">
+            <h1>運営元情報</h1>
+        </div>
+        
+        <div class="content-wrap">
+            <p>このサービスは、特定の企業ではなく、個人によって開発・運営されています。</p>
+
+            <h2>プロフィール</h2>
+            <div class="profile-card">
+                <img src="/peace.png" alt="開発者のプロフィール画像" class="profile-img">
+                <div class="profile-name">開発者</div>
+                <p class="profile-desc">
+                    東京理科大学の大学院に在籍中（2026年4月時点）。<br><br>
+                    情報系やプログラミングを専門としているわけではないため、技術的に難しいご質問や、高度な機能追加のご要望にはお答えできないかもしれませんが、「送別会や飲み会で手軽にクイズができたら楽しいな」という思いで、自分なりに勉強しながらこのサービスを作りました。皆さまのイベントが少しでも盛り上がるお手伝いができれば嬉しいです！
+                </p>
+            </div>
+
+            <h2>お問い合わせ</h2>
+            <p>X（旧Twitter）等のSNSは利用しておりません。<br>サービスに関するご質問、バグの報告、または応援メッセージなどがございましたら、以下のメールアドレスまでお気軽にご連絡ください。</p>
+            
+            <div class="contact-box">
+                <a href="mailto:hayaborec@gmail.com" class="contact-email">hayaborec@gmail.com</a>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="/" class="back-btn">トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

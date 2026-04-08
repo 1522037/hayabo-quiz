@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>お問い合わせ - Hayabo</title>
+    <style>
+        :root { 
+            --bg-color: #ffffff; 
+            --primary-color: #000000; 
+            --text-color: #333333; 
+            --body-font: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; 
+            --title-font: 'Academy Engraved LET', serif; 
+        }
+        
+        body { font-family: var(--body-font); padding: 0; background-color: var(--bg-color); color: var(--text-color); margin: 0; min-height: 100vh; }
+        
+        /* ヘッダー */
+        .header { text-align: center; padding: 20px 15px; border-bottom: 1px solid #eee; }
+        .logo a { font-family: var(--title-font); font-size: 28px; color: var(--primary-color); text-decoration: none; letter-spacing: 0.05em; font-weight: bold; }
+        
+        /* メインコンテンツ */
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px 80px; text-align: center; }
+        h1 { font-family: var(--body-font); font-size: 24px; margin-bottom: 30px; letter-spacing: 0.1em; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 10px; }
+        p { font-size: 14px; color: #666; margin-bottom: 30px; }
+
+        /* iframe（フォーム埋め込み）のラッパー */
+        .form-wrapper { width: 100%; max-width: 640px; margin: 0 auto; background: #f9f9f9; border-radius: 8px; padding: 10px 0; border: 1px solid #eee; overflow: hidden; }
+        
+        /* 戻るボタン */
+        .back-btn { display: inline-block; margin-top: 50px; padding: 14px 40px; background: #fff; color: #000; border: 1px solid #000; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.2s; text-align: center; font-size: 15px; letter-spacing: 0.05em; }
+        .back-btn:hover { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <div class="logo"><a href="/">Hayabo</a></div>
+    </div>
+
+    <div class="container">
+        <h1>お問い合わせ</h1>
+        <p>サービスに関するご質問やご要望は、以下のフォームよりお送りください。</p>
+        
+        <div class="form-wrapper">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeh1hPpDdfyvx8qPapREAidf03J4q_THtcFCC7l2OrcgQiMbA/viewform?usp=publish-editor" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">読み込み中…</iframe>
+        </div>
+
+        <div>
+            <a href="/" class="back-btn">トップページに戻る</a>
+        </div>
+    </div>
+
+</body>
+</html>

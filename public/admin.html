@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hayabo - ADMIN PANEL</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --panel-bg: #ffffff;
+            --primary-color: #000000;
+            --text-color: #000000;
+            --border-color: #dddddd;
+            --btn-correct: #198754;
+            --btn-wrong: #dc3545;
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+            --title-font: 'Academy Engraved LET', serif;
+        }
+
+        body { font-family: var(--font-family); padding: 15px; background-color: var(--bg-color); color: var(--text-color); margin: 0; min-height: 100vh; }
+        .container { max-width: 900px; margin: auto; display: flex; gap: 20px; flex-wrap: wrap; }
+        
+        .screen { display: none; }
+        .active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h1 { font-family: var(--title-font); text-align: center; font-size: 26px; letter-spacing: 0.1em; color: var(--primary-color); margin-bottom: 20px; width: 100%; }
+        .panel { flex: 1; min-width: 100%; box-sizing: border-box; background: var(--panel-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        
+        @media (min-width: 768px) {
+            .panel { min-width: 350px; }
+        }
+
+        h2 { font-family: var(--title-font); margin-top: 0; font-size: 18px; letter-spacing: 0.1em; color: var(--primary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 10px;}
+        h3 { font-family: var(--title-font); font-size: 16px; color: #555; margin-top: 25px; letter-spacing: 0.05em; }
+
+        button { font-size: 15px; padding: 12px; margin: 5px 0; cursor: pointer; width: 100%; border: 1px solid #333; border-radius: 4px; font-weight: bold; letter-spacing: 0.05em; transition: all 0.2s; color: #fff; box-sizing: border-box; }
+        button:active { transform: translateY(2px); }
+
+        .correct { background: var(--btn-correct); border-color: #146c43; }
+        .wrong { background: var(--btn-wrong); border-color: #b02a37; }
+        .reset { background: #555; color: #fff; border-color: #444; margin-bottom: 10px; }
+        .thinking { background: #333; border-color: #222; margin-bottom: 20px; }
+        .register { background: var(--primary-color); color: #fff; border: none; }
+        .copy-btn { background: #f0f0f0; border: 1px solid #ccc; font-size: 14px; padding: 8px; margin-bottom: 20px; color: #333; }
+        
+        .btn-small { width: auto; padding: 8px 15px; font-size: 13px; margin-left: 10px; }
+        
+        .btn-delete { background: #dc3545; color: white; border: 1px solid #b02a37; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0; width: auto; }
+
+        input, select { font-size: 16px; padding: 10px; width: 100%; margin-bottom: 15px; background-color: #fafafa; border: 1px solid #ccc; color: var(--text-color); border-radius: 4px; transition: border-color 0.3s; box-sizing: border-box;}
+        input:focus, select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee; margin-bottom: 10px; }
+        .mode-text { font-weight: bold; font-size: 13px; letter-spacing: 0.05em; color: #333; }
+        
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; border: 1px solid #bbb; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: #fff; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #e0e0e0; border-color: #999; }
+        input:checked + .slider:before { transform: translateX(24px); background-color: var(--primary-color); }
+        .lock-switch input:checked + .slider:before { background-color: var(--btn-wrong); }
+        .scope-switch input:checked + .slider:before { background-color: #0d6efd; }
+
+        ol, ul { padding-left: 0; list-style: none; margin-top: 10px; }
+        li { font-size: 15px; padding: 12px 5px; border-bottom: 1px solid #eee; letter-spacing: 0.05em; color: #333; }
+        
+        .user-li { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .user-name-wrapper { flex: 1; word-break: break-all; font-weight: bold; }
+        
+        #currentAnswer { font-family: var(--title-font); color: var(--primary-color); font-size: 1.8em; font-weight: normal; display: inline-block; margin-left: 10px; }
+        .time-diff { font-size: 0.8em; color: #777; margin-left: 10px; font-weight: normal; }
+        .team-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; background: #eee; font-size: 11px; margin-left: 8px; color: #555; }
+    </style>
+</head>
+<body>
+    <h1>CONTROL PANEL <br><span id="displayRoomId" style="font-family:var(--body-font); font-size:14px; color:#777;"></span></h1>
+    
+    <div id="setupScreen" class="screen active container">
+        <div class="panel">
+            <h2>⚙️ ROOM SETUP</h2>
+            
+            <p style="color:#555; font-size: 13px;">参加者に以下のURLを共有してください：</p>
+            <input type="text" id="inviteUrl" readonly style="color: var(--primary-color); font-weight: bold; cursor: text; font-size: 14px;">
+            <button class="copy-btn" onclick="copyUrl()">URLをコピーする</button>
+
+            <div class="toggle-container" style="margin-top: 20px;">
+                <span class="mode-text" id="teamModeLabel">チーム戦: OFF</span>
+                <label class="switch">
+                    <input type="checkbox" id="teamModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="teamCountSetup" style="display: none; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee; margin-bottom: 10px;">
+                <span style="color: #555; font-size: 13px; display: block; margin-bottom: 10px; font-weight: bold;">チーム数を作成:</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="number" id="teamCountInput" value="2" min="2" max="26" style="flex: 1; margin-bottom: 0;">
+                    <button class="reset btn-small" style="margin-bottom: 0; margin-left: 0; flex: 1;" onclick="setTeamCount()">チーム生成</button>
+                </div>
+                <p id="teamCountMsg" style="font-size: 12px; color: #198754; margin-top: 5px; margin-bottom: 0; font-weight: bold;"></p>
+            </div>
+
+            <h3 style="border-top: 1px solid #eee; padding-top: 20px;">👥 メンバー登録</h3>
+            <input type="text" id="regUser" placeholder="ユーザー名 (必須)">
+            <select id="regTeam" style="display: none;">
+                <option value="">チームを選択してください</option>
+            </select>
+            
+            <button class="register" onclick="registerUser('regUser', 'regTeam')">登録する</button>
+            <p id="adminMsgSetup" style="font-size:13px; color:#198754; min-height: 20px; margin-top: 10px; font-weight: bold;"></p>
+            
+            <ul id="userListSetup" style="margin-bottom: 30px; max-height: 200px; overflow-y: auto;"></ul>
+
+            <button class="register" style="padding: 15px; font-size: 16px;" onclick="goToControl()">クイズ画面へ進む ➡</button>
+        </div>
+    </div>
+
+    <div id="controlScreen" class="screen container">
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
+                <h2 style="margin: 0; border: none; padding: 0;">🎮 SYSTEM CONTROL</h2>
+                <button class="copy-btn" style="margin: 0; padding: 8px 12px; width: auto;" onclick="copyUrl()">URLコピー</button>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="mode-text" id="modeLabel">ORDER MODE</span>
+                <label class="switch">
+                    <input type="checkbox" id="modeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="mode-text" id="otetsukiLabel">お手付き: なし</span>
+                <label class="switch">
+                    <input type="checkbox" id="otetsukiToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-container" id="scopeContainer" style="display: none;">
+                <span class="mode-text" id="penaltyScopeLabel">ペナルティ: 個人</span>
+                <label class="switch scope-switch">
+                    <input type="checkbox" id="penaltyScopeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-container" style="margin-bottom: 25px; margin-top: 10px;">
+                <span class="mode-text" id="manualLockLabel">強制ロック: 解除中</span>
+                <label class="switch lock-switch">
+                    <input type="checkbox" id="manualLockToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button class="reset" onclick="resetQuiz()">■ 次の問題へ (RESET)</button>
+            <button class="thinking" onclick="playThinking()">⏳ シンキングタイム (4秒)</button>
+            
+            <h3 style="margin-top: 15px; font-size: 14px;">現在の回答者: <br><span id="currentAnswer">なし</span></h3>
+            
+            <div style="display:flex; gap:10px; margin-top: 20px;">
+                <button class="correct" onclick="correctAnswer()">正解 ⭕️</button>
+                <button class="wrong" onclick="wrongAnswer()">不正解 ❌</button>
+            </div>
+
+            <h3 style="margin-top: 25px;">早押し順位:</h3>
+            <ol id="buzzList"></ol>
+
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee; margin-top: 40px;">
+                <h3 style="margin-top:0; border-bottom: 1px solid #ddd; padding-bottom: 10px;">👥 メンバー追加・管理</h3>
+                <div style="display:flex; flex-direction: column; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="ctrlRegUser" placeholder="ユーザー名" style="margin:0;">
+                    <div style="display: flex; gap: 10px;">
+                        <select id="ctrlRegTeam" style="display:none; margin:0; flex: 1;"></select>
+                        <button class="register btn-small" style="margin:0; flex: 1;" onclick="registerUser('ctrlRegUser', 'ctrlRegTeam')">追加</button>
+                    </div>
+                </div>
+                <p id="adminMsgCtrl" style="font-size:12px; color:#198754; min-height: 15px; margin-top: 5px; margin-bottom: 10px; font-weight: bold;"></p>
+                <ul id="userListControl" style="max-height: 200px; overflow-y: auto; border-top: 1px solid #eee; padding-top: 10px;"></ul>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentRoom = '';
+        let currentKey = ''; 
+        let isTeamModeActive = false;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('room') && urlParams.has('key')) {
+            currentRoom = urlParams.get('room');
+            currentKey = urlParams.get('key');
+            document.getElementById('displayRoomId').textContent = `[ ROOM: ${currentRoom} ]`;
+            
+            const inviteUrl = `${window.location.origin}/?room=${currentRoom}`;
+            document.getElementById('inviteUrl').value = inviteUrl;
+
+            socket.emit('admin-join', { roomId: currentRoom, adminKey: currentKey });
+        } else {
+            alert('不正なアクセスです。トップページからルームを作成してください。');
+            window.location.href = '/';
+        }
+
+        socket.on('admin-error', (msg) => {
+            alert(msg);
+            window.location.href = '/';
+        });
+
+        function copyUrl() {
+            const inviteUrl = `${window.location.origin}/?room=${currentRoom}`;
+            const tempInput = document.createElement('input');
+            tempInput.value = inviteUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert('招待URLをコピーしました！LINE等でシェアしてください。');
+        }
+
+        function goToControl() {
+            document.getElementById('setupScreen').classList.remove('active');
+            document.getElementById('controlScreen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        const audioBuzz = new Audio('/sounds/buzz.mp3');
+        const audioCorrect = new Audio('/sounds/correct.mp3');
+        const audioWrong = new Audio('/sounds/wrong.mp3');
+        const audioThinking = new Audio('/sounds/thinking.mp3'); 
+        let thinkingFadeOutTimer = null;
+
+        socket.on('play-sound', (type) => {
+            if (type === 'thinking') {
+                audioThinking.currentTime = 0; audioThinking.volume = 1.0; audioThinking.play().catch(e => {});
+                clearTimeout(thinkingFadeOutTimer);
+                thinkingFadeOutTimer = setTimeout(() => {
+                    let fade = setInterval(() => {
+                        if (audioThinking.volume > 0.1) { audioThinking.volume -= 0.1; } 
+                        else { clearInterval(fade); audioThinking.pause(); }
+                    }, 100); 
+                }, 3000); 
+            } else {
+                audioThinking.pause(); audioThinking.currentTime = 0; clearTimeout(thinkingFadeOutTimer);
+                if (type === 'buzz') { audioBuzz.currentTime = 0; audioBuzz.play().catch(e=>{}); }
+                else if (type === 'correct') { audioCorrect.currentTime = 0; audioCorrect.play().catch(e=>{}); }
+                else if (type === 'wrong') { audioWrong.currentTime = 0; audioWrong.play().catch(e=>{}); }
+            }
+        });
+
+        const teamModeToggle = document.getElementById('teamModeToggle');
+        const teamModeLabel = document.getElementById('teamModeLabel');
+        const regTeamSelect = document.getElementById('regTeam');
+        const ctrlRegTeamSelect = document.getElementById('ctrlRegTeam');
+        const teamCountSetup = document.getElementById('teamCountSetup');
+
+        socket.on('team-mode-changed', (isTeam) => {
+            isTeamModeActive = isTeam;
+            teamModeToggle.checked = isTeam;
+            teamModeLabel.textContent = isTeam ? 'チーム戦: ON' : 'チーム戦: OFF';
+            
+            regTeamSelect.style.display = isTeam ? 'block' : 'none'; 
+            ctrlRegTeamSelect.style.display = isTeam ? 'block' : 'none'; 
+            teamCountSetup.style.display = isTeam ? 'block' : 'none';
+
+            if (document.getElementById('otetsukiToggle').checked) {
+                document.getElementById('scopeContainer').style.display = isTeam ? 'flex' : 'none';
+            }
+        });
+
+        teamModeToggle.addEventListener('change', (e) => {
+            socket.emit('admin-change-team-mode', e.target.checked);
+        });
+
+        function setTeamCount() {
+            const count = parseInt(document.getElementById('teamCountInput').value);
+            if (count >= 2 && count <= 26) {
+                socket.emit('admin-set-team-count', count);
+                document.getElementById('teamCountMsg').textContent = `${count}チーム生成済`;
+                setTimeout(() => document.getElementById('teamCountMsg').textContent = '', 3000);
+            } else {
+                alert("2から26の間で指定してください");
+            }
+        }
+
+        socket.on('teams-updated', (teams) => {
+            const updateSelect = (id) => {
+                const sel = document.getElementById(id);
+                sel.innerHTML = '<option value="">チームを選択</option>';
+                teams.forEach(team => {
+                    const opt = document.createElement('option');
+                    opt.value = team;
+                    opt.textContent = team;
+                    sel.appendChild(opt);
+                });
+            };
+            updateSelect('regTeam');
+            updateSelect('ctrlRegTeam');
+        });
+
+        const modeToggle = document.getElementById('modeToggle');
+        const modeLabel = document.getElementById('modeLabel');
+        socket.on('mode-changed', (mode) => {
+            modeToggle.checked = (mode === 'single');
+            modeLabel.textContent = (mode === 'single') ? 'ONLY MODE' : 'ORDER MODE';
+        });
+        modeToggle.addEventListener('change', (e) => {
+            socket.emit('admin-change-mode', e.target.checked ? 'single' : 'queue');
+        });
+
+        const otetsukiToggle = document.getElementById('otetsukiToggle');
+        const otetsukiLabel = document.getElementById('otetsukiLabel');
+        const scopeContainer = document.getElementById('scopeContainer'); 
+        
+        socket.on('otetsuki-changed', (isOn) => {
+            otetsukiToggle.checked = isOn;
+            otetsukiLabel.textContent = isOn ? 'お手付き: あり' : 'お手付き: なし';
+            scopeContainer.style.display = (isOn && isTeamModeActive) ? 'flex' : 'none';
+        });
+        
+        otetsukiToggle.addEventListener('change', (e) => {
+            socket.emit('admin-change-otetsuki', e.target.checked);
+        });
+
+        const penaltyScopeToggle = document.getElementById('penaltyScopeToggle');
+        const penaltyScopeLabel = document.getElementById('penaltyScopeLabel');
+        socket.on('penalty-scope-changed', (scope) => {
+            penaltyScopeToggle.checked = (scope === 'team');
+            penaltyScopeLabel.textContent = (scope === 'team') ? 'ペナルティ: チーム' : 'ペナルティ: 個人';
+        });
+        penaltyScopeToggle.addEventListener('change', (e) => {
+            socket.emit('admin-change-penalty-scope', e.target.checked ? 'team' : 'individual');
+        });
+
+        const manualLockToggle = document.getElementById('manualLockToggle');
+        const manualLockLabel = document.getElementById('manualLockLabel');
+        manualLockToggle.addEventListener('change', (e) => {
+            socket.emit('admin-toggle-lock', e.target.checked);
+        });
+
+        function updateLockUI(isLocked) {
+            manualLockToggle.checked = isLocked;
+            if (isLocked) {
+                manualLockLabel.textContent = '強制ロック: ロック中 🔒'; manualLockLabel.style.color = '#dc3545';
+            } else {
+                manualLockLabel.textContent = '強制ロック: 解除中 🔓'; manualLockLabel.style.color = '#333';
+            }
+        }
+
+        function resetQuiz() { socket.emit('reset'); }
+        function playThinking() { socket.emit('admin-play-thinking'); }
+        function correctAnswer() { socket.emit('admin-correct'); } 
+        function wrongAnswer() { socket.emit('wrong'); }
+
+        socket.on('update', (data) => {
+            const list = document.getElementById('buzzList');
+            const current = document.getElementById('currentAnswer');
+            updateLockUI(data.isLocked);
+
+            list.innerHTML = '';
+            if (data.buzzList.length > 0) {
+                const topUser = data.buzzList[0];
+                let teamBadgeStr = (data.isTeamMode && topUser.team) ? `<span class="team-badge">${topUser.team}</span>` : '';
+                current.innerHTML = `${topUser.name} ${teamBadgeStr}`;
+                
+                data.buzzList.forEach((user, index) => {
+                    const li = document.createElement('li');
+                    let diffHTML = (index > 0 && user.timeDiff) ? `<span class="time-diff">(+${user.timeDiff}秒)</span>` : '';
+                    let tBadge = (data.isTeamMode && user.team) ? `<span class="team-badge">${user.team}</span>` : '';
+                    li.innerHTML = `${index + 1}. <span style="font-weight:bold;">${user.name}</span> ${tBadge} ${diffHTML}`;
+                    list.appendChild(li);
+                });
+            } else {
+                current.textContent = 'なし';
+            }
+        });
+
+        function registerUser(inputId, selectId) {
+            const userInp = document.getElementById(inputId);
+            const teamSel = document.getElementById(selectId);
+            
+            if(!userInp.value || (isTeamModeActive && !teamSel.value)) { 
+                alert('すべての必須項目を入力してください'); return; 
+            }
+            socket.emit('admin-register-user', { username: userInp.value, team: teamSel.value });
+            userInp.value = ''; 
+        }
+
+        socket.on('admin-message', (msg) => {
+            document.getElementById('adminMsgSetup').textContent = msg;
+            document.getElementById('adminMsgCtrl').textContent = msg;
+            setTimeout(() => {
+                document.getElementById('adminMsgSetup').textContent = '';
+                document.getElementById('adminMsgCtrl').textContent = '';
+            }, 3000);
+        });
+
+        socket.on('admin-update-users', (usersObj) => {
+            const renderList = (listId) => {
+                const list = document.getElementById(listId);
+                if(!list) return;
+                list.innerHTML = '';
+                for (const [username, info] of Object.entries(usersObj)) {
+                    const li = document.createElement('li');
+                    li.className = 'user-li';
+                    
+                    let tBadge = (isTeamModeActive && info.team) ? `<span class="team-badge">${info.team}</span>` : '';
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'user-name-wrapper';
+                    nameSpan.innerHTML = `${username} ${tBadge}`;
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.textContent = '削除';
+                    delBtn.className = 'btn-delete';
+                    delBtn.onclick = () => {
+                        if(confirm(`「${username}」の登録を削除しますか？`)) {
+                            socket.emit('admin-delete-user', username);
+                        }
+                    };
+
+                    li.appendChild(nameSpan);
+                    li.appendChild(delBtn);
+                    list.appendChild(li);
+                }
+            };
+            
+            renderList('userListSetup');
+            renderList('userListControl');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>よくある質問 - Hayabo</title>
+    <style>
+        :root { 
+            --bg-color: #ffffff; 
+            --primary-color: #000000; 
+            --text-color: #333333; 
+            --text-light: #666666;
+            --body-font: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; 
+            --title-font: 'Academy Engraved LET', serif; 
+        }
+        
+        body { font-family: var(--body-font); padding: 0; background-color: var(--bg-color); color: var(--text-color); margin: 0; min-height: 100vh; line-height: 1.8; }
+        
+        /* ヘッダー */
+        .header { text-align: center; padding: 20px 15px; border-bottom: 1px solid #eee; }
+        .logo a { font-family: var(--title-font); font-size: 28px; color: var(--primary-color); text-decoration: none; letter-spacing: 0.05em; font-weight: bold; }
+        
+        /* メインコンテンツ */
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px 80px; }
+        h1 { font-family: var(--body-font); font-size: 24px; text-align: center; margin-bottom: 40px; letter-spacing: 0.1em; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 10px; }
+        
+        .content-wrap { text-align: left; }
+        
+        /* 目次 */
+        .toc { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 40px; border: 1px solid #eee; }
+        .toc-title { font-weight: bold; margin-bottom: 15px; color: var(--primary-color); }
+        .toc ul { list-style-type: none; padding-left: 0; margin: 0; }
+        .toc li { margin-bottom: 10px; font-size: 14px; }
+        .toc a { color: var(--primary-color); text-decoration: none; transition: opacity 0.2s; }
+        .toc a:hover { opacity: 0.6; text-decoration: underline; }
+
+        /* Q&Aセクション */
+        .qa-item { margin-bottom: 40px; }
+        h2 { font-size: 18px; color: var(--primary-color); margin-top: 0; margin-bottom: 15px; border-left: 4px solid #000; padding-left: 10px; line-height: 1.4; }
+        p { font-size: 14px; color: var(--text-light); margin-bottom: 15px; }
+        
+        /* 戻るボタン */
+        .back-btn { display: inline-block; margin-top: 50px; padding: 14px 40px; background: #fff; color: #000; border: 1px solid #000; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.2s; text-align: center; font-size: 15px; letter-spacing: 0.05em; }
+        .back-btn:hover { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <div class="logo"><a href="/">Hayabo</a></div>
+    </div>
+
+    <div class="container">
+        <div style="text-align: center;">
+            <h1>よくある質問</h1>
+        </div>
+        
+        <div class="content-wrap">
+            
+            <div class="toc">
+                <div class="toc-title">目次</div>
+                <ul>
+                    <li><a href="#q1">順番待ちモードと一発勝負モードの違いは何ですか？</a></li>
+                    <li><a href="#q2">参加者のスマホから音（効果音）が鳴りません</a></li>
+                    <li><a href="#q3">早押しボタンの反応が遅い・押せない</a></li>
+                    <li><a href="#q4">間違えて登録したメンバーを削除したい</a></li>
+                    <li><a href="#q5">ルームを削除したい</a></li>
+                    <li><a href="#q6">アプリをダウンロードすることはできますか？</a></li>
+                    <li><a href="#q7">参加人数の上限はありますか？</a></li>
+                    <li><a href="#q8">ルームページにアクセスできない</a></li>
+                    <li><a href="#q9">データの保存期間はいつまでですか？</a></li>
+                    <li><a href="#q10">その他お困りな点について</a></li>
+                </ul>
+            </div>
+
+            <div id="q1" class="qa-item">
+                <h2>順番待ちモードと一発勝負モードの違いは何ですか？</h2>
+                <p>「順番待ちモード」は、ボタンを押した順番が全員分ランキング形式で表示されるモードです。「一発勝負モード」は、一番最初にボタンを押した1名のみが回答権を得られ、他の参加者はボタンが押せなくなる（ロックされる）モードです。</p>
+            </div>
+
+            <div id="q2" class="qa-item">
+                <h2>参加者のスマホから音（効果音）が鳴りません</h2>
+                <p>Hayaboでは、会場でのハウリング（マイクの反響音）を防ぐため、効果音は「管理者の端末」からのみ鳴る仕様となっています。管理者の端末（PCやスマートフォン）を会場のスピーカー等に繋いでご利用ください。</p>
+            </div>
+
+            <div id="q3" class="qa-item">
+                <h2>早押しボタンの反応が遅い・押せない</h2>
+                <p>通信環境が不安定な場合、反応に遅れが生じることがあります。また、お手付きペナルティの対象になっている場合や、管理者が「強制ロック」を有効にしている場合はボタンが押せなくなりますので、管理者の画面やご自身の画面のステータス表示をご確認ください。</p>
+            </div>
+
+            <div id="q4" class="qa-item">
+                <h2>間違えて登録したメンバーを削除したい</h2>
+                <p>管理画面の下部にある「メンバー追加・管理」リストから、該当メンバーの横にある「削除」ボタンを押すことで登録を解除できます。</p>
+            </div>
+
+            <div id="q5" class="qa-item">
+                <h2>ルームを削除したい</h2>
+                <p>Hayaboではルーム削除機能を提供していません。間違えて作成してしまった場合や、イベントが終了した場合は、そのまま放置していただいて問題ありません。<br>各ルームのURLはランダムに生成されており、第三者に予測されることはない設計となっておりますので、ご安心ください。</p>
+            </div>
+
+            <div id="q6" class="qa-item">
+                <h2>アプリをダウンロードすることはできますか？</h2>
+                <p>申し訳ありませんが、現在Hayaboのアプリ版は存在せず、Web版のみのご提供となります。<br>これは、イベント時に参加者全員にアプリをダウンロードしてもらう手間を省くことを目的としており、現段階では将来的にアプリ版を開発する予定もありません。</p>
+            </div>
+
+            <div id="q7" class="qa-item">
+                <h2>参加人数の上限はありますか？</h2>
+                <p>システム上、数百人規模での同時アクセスでも遅延なくご利用いただけます。ただし、参加者の名前を管理者が1人ずつ手動で登録する仕様となっているため、幹事様の負担を考慮し、数十名程度でのご利用を推奨しております。</p>
+            </div>
+
+            <div id="q8" class="qa-item">
+                <h2>ルームページにアクセスできない</h2>
+                <p>URLが正しいことをご確認の上、改善しない場合はお問合せフォームからメッセージをいただければ、原因を調査いたします。</p>
+            </div>
+
+            <div id="q9" class="qa-item">
+                <h2>データの保存期間はいつまでですか？</h2>
+                <p>Hayaboは単発のイベント用ツールとして設計されているため、長期間のデータ保存は保証しておりません。イベントが終了した後のデータは、サーバーの更新等に伴い順次削除される場合がございますので、あらかじめご了承ください。</p>
+            </div>
+
+            <div id="q10" class="qa-item">
+                <h2>その他お困りな点について</h2>
+                <p>お問合せフォームからメッセージをいただければ、個別にご回答・ご対応いたします。お手数ですが、よろしくお願い致します。</p>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="/" class="back-btn">トップページに戻る</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
