@@ -2,156 +2,517 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hayabo - 管理者パネル</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>管理者パネル - Hayabo</title>
     <style>
-        /* 既存のスタイルを維持しつつ、参加者用ボタンのスタイルを追加 */
-        :root { --primary-color: #000000; --text-light: #666666; }
-        body { font-family: sans-serif; text-align: center; background: #f4f4f4; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .logo { font-family: 'serif'; font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        :root { 
+            --bg-color: #f4f7f6; 
+            --panel-bg: #ffffff; 
+            --primary-color: #2c3e50; 
+            --secondary-color: #34495e; 
+            --accent-color: #e74c3c; 
+            --text-color: #333;
+            --border-color: #e0e6ed;
+            --success-color: #2ecc71;
+            --info-color: #3498db;
+            --warning-color: #f39c12;
+            --body-font: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; 
+            --title-font: 'Academy Engraved LET', serif; 
+        }
         
-        .control-group { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
-        .btn { padding: 12px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin: 5px; transition: 0.2s; }
-        .btn-correct { background: #2ecc71; color: white; }
-        .btn-wrong { background: #e74c3c; color: white; }
-        .btn-next { background: #3498db; color: white; }
-        .btn-thinking { background: #f1c40f; color: black; }
-        .btn-join { background: #eee; color: #333; font-size: 12px; padding: 5px 10px; }
+        body { font-family: var(--body-font); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px 10px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .logo { font-family: var(--title-font); font-size: 32px; color: var(--primary-color); font-weight: bold; letter-spacing: 0.05em; }
+        .room-info { display: inline-block; background: var(--primary-color); color: white; padding: 8px 20px; border-radius: 20px; font-size: 16px; font-weight: bold; margin-top: 10px; letter-spacing: 0.1em; }
+        
+        .panel { background: var(--panel-bg); padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .panel h3 { margin-top: 0; color: var(--secondary-color); font-size: 16px; border-bottom: 2px solid var(--bg-color); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 参加用ボタン */
+        .join-admin-btn { background: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        
+        .url-box { display: flex; align-items: center; background: var(--bg-color); border-radius: 6px; padding: 5px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .url-box input { flex: 1; background: transparent; border: none; padding: 10px; font-size: 13px; color: var(--text-color); outline: none; }
+        .btn-copy { background: var(--secondary-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        
+        .form-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .form-group input, .form-group select { flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; }
+        
+        .btn { padding: 12px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; text-align: center; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--secondary-color); }
+        .btn-danger { background: var(--accent-color); }
+        .btn-success { background: var(--success-color); }
+        .btn-info { background: var(--info-color); }
+        .btn-warning { background: var(--warning-color); color: #fff; }
+        
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .control-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+        
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 15px; }
+        .list-item:last-child { border-bottom: none; }
+        .rank-badge { background: var(--accent-color); color: white; font-family: var(--title-font); font-size: 16px; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; }
+        
+        .switch-container { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .switch-container:last-child { border-bottom: none; }
+        .switch-label { font-size: 14px; font-weight: bold; color: var(--secondary-color); }
+        .switch-desc { font-size: 11px; color: #7f8c8d; display: block; margin-top: 4px; font-weight: normal; }
 
-        /* 管理者参加用ボタン（コンパクト版） */
-        .admin-buzz-zone { margin-top: 20px; padding-top: 20px; border-top: 2px dashed #ccc; }
-        .push-btn-small { width: 120px; height: 120px; border-radius: 50%; background: #000; color: white; font-weight: bold; border: 5px solid #eee; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
-        .push-btn-small:active { transform: scale(0.95); background: #333; }
-        .push-btn-small:disabled { background: #ccc; cursor: not-allowed; }
+        /* トグルスイッチ */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success-color); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-        #rankingList { text-align: left; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 6px; }
-        .rank-item { padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-        .invite-url { background: #eee; padding: 10px; font-size: 14px; word-break: break-all; border-radius: 4px; margin-bottom: 20px; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        #messageBox { text-align: center; font-size: 13px; color: var(--success-color); font-weight: bold; margin-bottom: 15px; min-height: 18px; }
+
+        /* ▼ ハイブリッド画面（管理者プレイモード）のスタイル ▼ */
+        #hybridScreen { display: none; text-align: center; }
+        .mini-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px; }
+        .hybrid-back { display: inline-block; margin-bottom: 20px; color: var(--info-color); text-decoration: none; font-weight: bold; cursor: pointer; font-size: 14px;}
+        
+        /* 参加者と同じ早押しボタンのデザイン */
+        .push-btn-container { position: relative; display: inline-block; width: 220px; height: 220px; border-radius: 50%; background: conic-gradient(#eee 0deg, #fff 45deg, #eee 90deg, #f9f9f9 135deg, #fff 180deg, #eee 225deg, #f9f9f9 270deg, #fff 315deg, #eee 360deg); box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; box-sizing: border-box; margin-top: 10px; border: 1px solid #ddd; }
+        .push-btn { position: relative; display: block; width: 100%; height: 100%; font-family: var(--title-font); font-size: 36px; color: #fff; background: radial-gradient(circle at 30% 30%, #444 0%, #000 100%); border: none; border-radius: 50%; cursor: pointer; box-shadow: inset 0 5px 15px rgba(255,255,255,0.3), inset 0 -10px 20px rgba(0,0,0,0.4), 0 8px 15px rgba(0,0,0,0.3); transition: all 0.05s ease-out; outline: none; -webkit-tap-highlight-color: transparent; letter-spacing: 0.1em; user-select: none; -webkit-user-select: none; }
+        .push-btn.is-pressed { transform: scale(0.96); background: radial-gradient(circle at center, #222 0%, #000 100%); box-shadow: inset 0 4px 10px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3); }
+        #hybridStatus { font-family: var(--title-font); font-size: 24px; margin: 20px 0; height: 30px; letter-spacing: 0.1em; color: var(--primary-color); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">Hayabo Admin</div>
-        
-        <div class="invite-url">
-            招待URL: <span id="urlText">---</span>
-            <button onclick="copyUrl()" style="margin-left:10px; font-size:12px;">コピー</button>
+        <div class="header">
+            <div class="logo">Hayabo</div>
+            <div class="room-info">ROOM: <span id="displayRoomId"></span></div>
         </div>
 
-        <div class="control-group">
-            <button class="btn btn-correct" onclick="sendCorrect()">正解 ⭕️</button>
-            <button class="btn btn-wrong" onclick="sendWrong()">不正解 ❌</button>
-            <br>
-            <button class="btn btn-thinking" onclick="sendThinking()">シンキングタイム 🎵</button>
-            <button class="btn btn-next" onclick="sendReset()">次の問題へ ⏩</button>
-        </div>
+        <div id="messageBox"></div>
 
-        <div id="adminJoinZone">
-            <button class="btn btn-join" id="showJoinBtn" onclick="toggleJoinForm()">管理者も参加する</button>
-            <div id="joinForm" style="display:none; margin-top:10px;">
-                <input type="text" id="adminNameInput" placeholder="管理者の名前" style="padding:8px; border-radius:4px; border:1px solid #ccc;">
-                <button class="btn" style="background:#000; color:#white; font-size:12px; padding:8px;" onclick="adminRegister()">登録</button>
+        <div id="mainAdminScreen">
+            <div class="panel">
+                <h3>
+                    招待URL
+                    <button class="join-admin-btn" onclick="openHybridMode()">🙋‍♂️ 管理者も参加</button>
+                </h3>
+                <div class="url-box">
+                    <input type="text" id="inviteUrl" readonly>
+                    <button class="btn-copy" onclick="copyUrl()">コピー</button>
+                </div>
+                <p style="font-size: 12px; color: #7f8c8d; margin-top: 0;">参加者にこのURLをシェアしてください。</p>
+            </div>
+
+            <div class="panel">
+                <h3>クイズ進行コントロール</h3>
+                <div class="control-grid three">
+                    <button class="btn btn-danger" onclick="socket.emit('admin-correct')">⭕️ 正解</button>
+                    <button class="btn btn-info" onclick="socket.emit('wrong')">❌ 不正解</button>
+                    <button class="btn btn-warning" onclick="socket.emit('admin-play-thinking')">🤔 音出し</button>
+                </div>
+                <button class="btn btn-success" style="width: 100%; margin-bottom: 15px; padding: 15px; font-size: 16px;" onclick="resetBuzzers()">⏩ 次の問題へ</button>
+                
+                <div class="switch-container">
+                    <span class="switch-label">強制ロック (受付停止)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="lockToggle" onchange="toggleLock()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel" style="background: #fffdfaa1; border-color: #f39c12;">
+                <h3 style="color: #d35400;">🏆 現在の解答権（早押し順）</h3>
+                <div id="liveRanking"></div>
+            </div>
+
+            <div class="panel">
+                <h3>ルール設定</h3>
+                <div class="switch-container">
+                    <div>
+                        <span class="switch-label">チーム戦モード</span>
+                        <span class="switch-desc">ONにするとチーム対抗戦になります</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="teamModeToggle" onchange="toggleTeamMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div id="teamCountConfig" style="display: none; padding: 15px 0; border-bottom: 1px solid var(--border-color);">
+                    <span class="switch-label" style="display:block; margin-bottom:8px;">チーム数</span>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <select id="teamCountSelect" onchange="setTeamCount()">
+                            <option value="2">2チーム (A, B)</option>
+                            <option value="3">3チーム (A, B, C)</option>
+                            <option value="4">4チーム (A〜D)</option>
+                            <option value="5">5チーム (A〜E)</option>
+                            <option value="6">6チーム (A〜F)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="switch-container">
+                    <div>
+                        <span class="switch-label">順番待ちモード</span>
+                        <span class="switch-desc">ON: 全員の順位表示 / OFF: 1着のみ回答権</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="switch-container">
+                    <div>
+                        <span class="switch-label">お手付きペナルティ</span>
+                        <span class="switch-desc">不正解者は次の問題まで回答不可</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="otetsukiToggle" onchange="toggleOtetsuki()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div id="penaltyScopeConfig" style="display: none; padding: 15px 0;">
+                    <span class="switch-label" style="display:block; margin-bottom:8px;">ペナルティの対象 (チーム戦時)</span>
+                    <select id="penaltyScopeSelect" onchange="changePenaltyScope()" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <option value="individual">不正解した「個人」のみ回答不可</option>
+                        <option value="team">不正解した「チーム全体」が回答不可</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>メンバー追加・管理</h3>
+                <div class="form-group">
+                    <input type="text" id="newUsername" placeholder="名前 (例: たろう)">
+                    <select id="teamSelect" style="display:none; flex: 0.5;">
+                        <option value="">チーム未定</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="registerUser()">追加</button>
+                </div>
+                <div id="registeredUsers" style="margin-top: 15px;"></div>
             </div>
         </div>
 
-        <div class="admin-buzz-zone" id="adminBuzzZone" style="display:none;">
-            <p style="font-size:12px; color:#666; margin-bottom:5px;">あなたのボタン</p>
-            <button id="adminBuzzBtn" class="push-btn-small">PUSH</button>
-            <p id="adminStatus" style="font-weight:bold; margin-top:5px;"></p>
+        <div id="hybridScreen" class="panel">
+            <div class="hybrid-back" onclick="closeHybridMode()">🔙 メイン管理画面に戻る</div>
+            
+            <div style="font-size: 14px; color: var(--text-color); font-weight: bold; margin-bottom: 20px;">
+                <span id="hybridPlayerName">---</span> <span id="hybridPlayerTeam" style="color: #666; font-size: 12px;"></span>
+            </div>
+
+            <div class="push-btn-container">
+                <button id="hybridBuzzBtn" class="push-btn">PUSH</button>
+            </div>
+            <div id="hybridStatus">READY</div>
+
+            <hr style="border: 0; border-top: 1px dashed #ccc; margin: 25px 0;">
+            <div style="font-size: 12px; color: #999; margin-bottom: -15px;">管理者メニュー</div>
+            <div class="mini-controls">
+                <button class="btn btn-danger" onclick="socket.emit('admin-correct')">⭕️ 正解</button>
+                <button class="btn btn-info" onclick="socket.emit('wrong')">❌ 不正解</button>
+                <button class="btn btn-warning" onclick="socket.emit('admin-play-thinking')">🤔 音出し</button>
+                <button class="btn btn-success" onclick="resetBuzzers()">⏩ 次の問題へ</button>
+            </div>
         </div>
 
-        <h3>RANKING / 順番待ち</h3>
-        <div id="rankingList">---</div>
     </div>
-
-    <audio id="snd_buzz" src="https://otologic.jp/free/se/quiz01.mp3"></audio>
-    <audio id="snd_correct" src="https://otologic.jp/free/se/quiz-bell01.mp3"></audio>
-    <audio id="snd_wrong" src="https://otologic.jp/free/se/quiz-wrong01.mp3"></audio>
-    <audio id="snd_thinking" src="https://otologic.jp/free/se/quiz-thinking01.mp3"></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get('room');
+        const currentRoomId = urlParams.get('room');
         const adminKey = urlParams.get('key');
-        
-        document.getElementById('urlText').textContent = `${window.location.origin}/?room=${roomId}`;
 
-        socket.emit('admin-join', { roomId, adminKey });
+        if (!currentRoomId || !adminKey) {
+            alert('不正なアクセスです');
+            window.location.href = '/';
+        }
 
-        // 音声再生
-        socket.on('play-sound', (type) => {
-            const audio = document.getElementById(`snd_${type}`);
-            if (audio) { audio.currentTime = 0; audio.play(); }
+        document.getElementById('displayRoomId').textContent = currentRoomId;
+        const inviteUrl = `${window.location.origin}/?room=${currentRoomId}`;
+        document.getElementById('inviteUrl').value = inviteUrl;
+
+        // UI要素
+        const mainAdminScreen = document.getElementById('mainAdminScreen');
+        const hybridScreen = document.getElementById('hybridScreen');
+        const hybridBuzzBtn = document.getElementById('hybridBuzzBtn');
+        const hybridStatus = document.getElementById('hybridStatus');
+
+        // 管理者プレイヤー用の変数
+        let adminAsPlayerName = '';
+        let adminAsPlayerTeam = '';
+        let hybridCanPush = true;
+        let lastHybridData = null;
+
+        socket.emit('admin-join', { roomId: currentRoomId, adminKey: adminKey });
+
+        socket.on('admin-error', (msg) => {
+            alert(msg);
+            window.location.href = '/';
         });
 
-        // ボタン送信関数
-        function sendCorrect() { socket.emit('admin-correct'); }
-        function sendWrong() { socket.emit('wrong'); }
-        function sendThinking() { socket.emit('admin-play-thinking'); }
-        function sendReset() { socket.emit('reset'); }
+        function showMessage(msg) {
+            const box = document.getElementById('messageBox');
+            box.textContent = msg;
+            setTimeout(() => { box.textContent = ''; }, 3000);
+        }
+        socket.on('admin-message', showMessage);
 
         function copyUrl() {
-            const url = document.getElementById('urlText').textContent;
-            navigator.clipboard.writeText(url).then(() => alert('コピーしました'));
+            const urlInput = document.getElementById('inviteUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            showMessage('招待URLをコピーしました！');
         }
 
-        // 管理者参加ロジック
-        let adminName = '';
-        function toggleJoinForm() {
-            document.getElementById('joinForm').style.display = 'block';
-            document.getElementById('showJoinBtn').style.display = 'none';
+        // --- ルール設定 ---
+        function toggleMode() {
+            const isQueue = document.getElementById('modeToggle').checked;
+            socket.emit('admin-change-mode', isQueue ? 'queue' : 'single');
         }
 
-        function adminRegister() {
-            const name = document.getElementById('adminNameInput').value;
-            if(!name) return;
-            // まずユーザーとしてサーバーに登録
-            socket.emit('admin-register-user', { username: name });
-            // その後ログイン
-            socket.emit('login', { roomId: roomId, username: name });
-            adminName = name;
-            document.getElementById('joinForm').style.display = 'none';
-            document.getElementById('adminBuzzZone').style.display = 'block';
+        function toggleOtetsuki() {
+            const isOtetsuki = document.getElementById('otetsukiToggle').checked;
+            socket.emit('admin-change-otetsuki', isOtetsuki);
+            document.getElementById('penaltyScopeConfig').style.display = (isOtetsuki && document.getElementById('teamModeToggle').checked) ? 'block' : 'none';
         }
 
-        const adminBuzzBtn = document.getElementById('adminBuzzBtn');
-        adminBuzzBtn.addEventListener('click', () => {
-            socket.emit('buzz');
+        function toggleLock() {
+            const isLocked = document.getElementById('lockToggle').checked;
+            socket.emit('admin-toggle-lock', isLocked);
+        }
+
+        function changePenaltyScope() {
+            const scope = document.getElementById('penaltyScopeSelect').value;
+            socket.emit('admin-change-penalty-scope', scope);
+        }
+
+        function resetBuzzers() {
+            socket.emit('reset');
+            document.getElementById('lockToggle').checked = false;
+        }
+
+        // --- チーム戦設定 ---
+        function toggleTeamMode() {
+            const isTeam = document.getElementById('teamModeToggle').checked;
+            socket.emit('admin-change-team-mode', isTeam);
+            document.getElementById('teamSelect').style.display = isTeam ? 'inline-block' : 'none';
+            document.getElementById('teamCountConfig').style.display = isTeam ? 'block' : 'none';
+            
+            const isOtetsuki = document.getElementById('otetsukiToggle').checked;
+            document.getElementById('penaltyScopeConfig').style.display = (isTeam && isOtetsuki) ? 'block' : 'none';
+        }
+
+        function setTeamCount() {
+            const count = parseInt(document.getElementById('teamCountSelect').value);
+            socket.emit('admin-set-team-count', count);
+        }
+
+        socket.on('teams-updated', (teams) => {
+            const select = document.getElementById('teamSelect');
+            select.innerHTML = '<option value="">チーム未定</option>';
+            teams.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t; opt.textContent = t;
+                select.appendChild(opt);
+            });
         });
+
+        // --- ユーザー管理 ---
+        function registerUser() {
+            const input = document.getElementById('newUsername');
+            const teamInput = document.getElementById('teamSelect');
+            const name = input.value.trim();
+            if (name) {
+                socket.emit('admin-register-user', { username: name, team: teamInput.value });
+                input.value = '';
+            }
+        }
+
+        function deleteUser(username) {
+            if (confirm(`本当に「${username}」を削除しますか？`)) {
+                socket.emit('admin-delete-user', username);
+            }
+        }
+
+        socket.on('admin-update-users', (users) => {
+            const container = document.getElementById('registeredUsers');
+            container.innerHTML = '';
+            const isTeamMode = document.getElementById('teamModeToggle').checked;
+
+            if (Object.keys(users).length === 0) {
+                container.innerHTML = '<div style="color: #999; font-size: 13px; text-align: center;">まだ誰も登録されていません</div>';
+            }
+
+            for (const name in users) {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                let teamInfo = (isTeamMode && users[name].team) ? `<span style="font-size: 12px; color: #666; margin-left: 10px;">(${users[name].team})</span>` : '';
+                
+                div.innerHTML = `
+                    <div><strong style="color: var(--secondary-color);">${name}</strong> ${teamInfo}</div>
+                    <button class="btn-delete" onclick="deleteUser('${name}')">削除</button>
+                `;
+                container.appendChild(div);
+            }
+        });
+
+        // --- ランキング表示＆ハイブリッド制御 ---
+        function getOrdinalSuffix(i) {
+            let j = i % 10, k = i % 100;
+            if (j == 1 && k != 11) return i + "st";
+            if (j == 2 && k != 12) return i + "nd";
+            if (j == 3 && k != 13) return i + "rd";
+            return i + "th";
+        }
 
         socket.on('update', (data) => {
-            const list = document.getElementById('rankingList');
-            list.innerHTML = '';
-            data.buzzList.forEach((u, i) => {
-                const div = document.createElement('div');
-                div.className = 'rank-item';
-                div.innerHTML = `<span>${i+1}. ${u.name}</span> <span>${u.timeDiff}s</span>`;
-                list.appendChild(div);
-            });
+            lastHybridData = data;
+            const container = document.getElementById('liveRanking');
+            container.innerHTML = '';
+            document.getElementById('lockToggle').checked = data.isLocked;
 
-            // 自分の状態更新
-            const adminStatus = document.getElementById('adminStatus');
-            const isMeBuzzed = data.buzzList.some(u => u.name === adminName);
-            if(isMeBuzzed) {
-                adminStatus.textContent = "WAITING...";
-                adminStatus.style.color = "#3498db";
-                adminBuzzBtn.disabled = true;
+            if (data.buzzList.length === 0) {
+                container.innerHTML = '<div style="color: #999; text-align: center; font-size: 14px;">待機中...</div>';
             } else {
-                adminStatus.textContent = data.isLocked ? "LOCKED" : "READY";
-                adminStatus.style.color = data.isLocked ? "#999" : "#2ecc71";
-                adminBuzzBtn.disabled = data.isLocked;
+                data.buzzList.forEach((user, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    let rankHTML = `<div class="rank-badge">${index + 1}</div>`;
+                    let teamHTML = (data.isTeamMode && user.team) ? `<span style="font-size:0.8em; color:#666;">(${user.team})</span>` : '';
+                    let diffHTML = (index > 0 && user.timeDiff) ? `<span style="color:#7f8c8d; font-size:12px;">+${user.timeDiff}s</span>` : '';
+                    
+                    div.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            ${rankHTML}
+                            <span style="font-weight: bold; margin-right: 10px;">${user.name}</span>
+                            ${teamHTML}
+                        </div>
+                        ${diffHTML}
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            if (data.penalizedUsers && data.penalizedUsers.length > 0) {
+                const pDiv = document.createElement('div');
+                pDiv.style.marginTop = "10px"; pDiv.style.fontSize = "12px"; pDiv.style.color = "var(--accent-color)";
+                pDiv.innerHTML = `<strong>ペナルティ中:</strong> ${data.penalizedUsers.join(', ')}`;
+                container.appendChild(pDiv);
+            }
+
+            // ハイブリッド画面の更新
+            if (adminAsPlayerName) {
+                updateHybridCanPush(data);
+                renderHybridStatus(data);
             }
         });
+
+        // ==========================================
+        //  ハイブリッド画面（管理者プレイモード）の制御
+        // ==========================================
+        
+        function openHybridMode() {
+            if (!adminAsPlayerName) {
+                const name = prompt("早押しに参加するための「あなたの名前」を入力してください。\n※事前に「メンバー追加」で登録した名前と同じ名前にしてください。");
+                if (!name) return; // キャンセル時
+                adminAsPlayerName = name.trim();
+                
+                // プレイヤーとしてサーバーにログイン
+                socket.emit('login', { roomId: currentRoomId, username: adminAsPlayerName });
+            }
+            
+            mainAdminScreen.style.display = 'none';
+            hybridScreen.style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function closeHybridMode() {
+            hybridScreen.style.display = 'none';
+            mainAdminScreen.style.display = 'block';
+        }
+
+        // ログイン成功時の処理
+        socket.on('login-success', (data) => {
+            // 管理者がプレイヤーとしてログインした場合
+            if (data.username === adminAsPlayerName) {
+                document.getElementById('hybridPlayerName').textContent = data.username;
+                if (data.isTeamMode && data.team) {
+                    document.getElementById('hybridPlayerTeam').textContent = `(${data.team})`;
+                    adminAsPlayerTeam = data.team;
+                }
+            }
+        });
+
+        // ボタンのアニメーション
+        hybridBuzzBtn.addEventListener('pointerdown', () => hybridBuzzBtn.classList.add('is-pressed'));
+        window.addEventListener('pointerup', () => hybridBuzzBtn.classList.remove('is-pressed'));
+        window.addEventListener('pointercancel', () => hybridBuzzBtn.classList.remove('is-pressed'));
+
+        // プッシュ処理
+        hybridBuzzBtn.addEventListener('click', () => {
+            if (hybridCanPush) {
+                socket.emit('buzz'); 
+                hybridCanPush = false; 
+            }
+        });
+
+        function updateHybridCanPush(data) {
+            const isSingleMode = document.getElementById('modeToggle').checked === false; // queueならtrue
+            const myListIndex = data.buzzList.findIndex(user => user.name === adminAsPlayerName);
+            const isOnlyModeLocked = (isSingleMode && data.buzzList.length > 0);
+            const isPenalizedUser = data.penalizedUsers && data.penalizedUsers.includes(adminAsPlayerName);
+            const isPenalizedTeam = data.isTeamMode && data.penalizedTeams && data.penalizedTeams.includes(adminAsPlayerTeam);
+            
+            if (data.isLocked || isOnlyModeLocked || myListIndex !== -1 || isPenalizedUser || isPenalizedTeam) {
+                hybridCanPush = false; 
+            } else {
+                hybridCanPush = true;
+            }
+        }
+
+        function renderHybridStatus(data) {
+            const isSingleMode = document.getElementById('modeToggle').checked === false;
+            const myListIndex = data.buzzList.findIndex(user => user.name === adminAsPlayerName);
+            const isPenalizedUser = data.penalizedUsers && data.penalizedUsers.includes(adminAsPlayerName);
+            const isPenalizedTeam = data.isTeamMode && data.penalizedTeams && data.penalizedTeams.includes(adminAsPlayerTeam);
+
+            if (myListIndex !== -1) {
+                const rank = myListIndex + 1;
+                hybridStatus.textContent = `YOU ARE ${getOrdinalSuffix(rank)}!`; 
+                hybridStatus.style.color = "var(--success-color)";
+            } else if (isPenalizedUser || isPenalizedTeam) {
+                hybridStatus.textContent = "PENALTY..."; 
+                hybridStatus.style.color = "var(--accent-color)"; 
+            } else {
+                const isOnlyModeLocked = (isSingleMode && data.buzzList.length > 0);
+                if (data.isLocked) {
+                    hybridStatus.textContent = "LOCKED"; hybridStatus.style.color = "#999"; 
+                } else if (isOnlyModeLocked) {
+                    hybridStatus.textContent = "WAIT..."; hybridStatus.style.color = "#999"; 
+                } else {
+                    hybridStatus.textContent = "READY"; hybridStatus.style.color = "var(--primary-color)"; 
+                }
+            }
+        }
 
         socket.on('celebrate', (winner) => {
-            if (winner.name === adminName) {
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            if (adminAsPlayerName === winner.name) {
+                hybridStatus.textContent = "CORRECT!"; 
+                hybridStatus.style.color = "var(--success-color)";
             }
         });
+
+        // 状態の同期復元
+        socket.on('mode-changed', (m) => document.getElementById('modeToggle').checked = (m === 'queue'));
+        socket.on('otetsuki-changed', (o) => document.getElementById('otetsukiToggle').checked = o);
+        socket.on('penalty-scope-changed', (s) => document.getElementById('penaltyScopeSelect').value = s);
+        socket.on('team-mode-changed', (t) => { document.getElementById('teamModeToggle').checked = t; toggleTeamMode(); });
     </script>
 </body>
 </html>
