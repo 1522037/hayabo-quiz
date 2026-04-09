@@ -56,8 +56,11 @@
         #modeDisplay { display: inline-block; background: #eee; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #555; font-weight: bold; margin-bottom: 25px; }
 
         .push-btn-container { position: relative; display: inline-block; width: 260px; height: 260px; border-radius: 50%; background: conic-gradient(#eee 0deg, #fff 45deg, #eee 90deg, #f9f9f9 135deg, #fff 180deg, #eee 225deg, #f9f9f9 270deg, #fff 315deg, #eee 360deg); box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 10px; box-sizing: border-box; margin-bottom: 30px; border: 1px solid #ddd; }
-        .push-btn { position: relative; display: block; width: 100%; height: 100%; font-family: var(--title-font); font-size: 48px; color: #fff; background: radial-gradient(circle at 30% 30%, #e74c3c 0%, #c0392b 100%); border: none; border-radius: 50%; cursor: pointer; box-shadow: inset 0 8px 20px rgba(255,255,255,0.4), inset 0 -12px 25px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.4); transition: all 0.05s ease-out; outline: none; -webkit-tap-highlight-color: transparent; letter-spacing: 0.1em; user-select: none; -webkit-user-select: none; }
-        .push-btn.is-pressed { transform: scale(0.95); background: radial-gradient(circle at center, #d35400 0%, #a23e25 100%); box-shadow: inset 0 6px 15px rgba(0,0,0,0.6), 0 3px 6px rgba(0,0,0,0.4); }
+        
+        /* ▼▼ 復活！スタイリッシュな黒ボタン ▼▼ */
+        .push-btn { position: relative; display: block; width: 100%; height: 100%; font-family: var(--title-font); font-size: 48px; color: #fff; background: radial-gradient(circle at 30% 30%, #444 0%, #000 100%); border: none; border-radius: 50%; cursor: pointer; box-shadow: inset 0 8px 20px rgba(255,255,255,0.4), inset 0 -12px 25px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.4); transition: all 0.05s ease-out; outline: none; -webkit-tap-highlight-color: transparent; letter-spacing: 0.1em; user-select: none; -webkit-user-select: none; }
+        .push-btn.is-pressed { transform: scale(0.95); background: radial-gradient(circle at center, #222 0%, #000 100%); box-shadow: inset 0 6px 15px rgba(0,0,0,0.6), 0 3px 6px rgba(0,0,0,0.4); }
+        /* ▲▲ ここまで ▲▲ */
 
         #status { font-family: var(--title-font); font-size: 32px; margin-bottom: 30px; height: 40px; letter-spacing: 0.1em; color: var(--primary-color); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         
@@ -313,7 +316,7 @@
             if (myUsername === winner.name) {
                 statusEl.textContent = "CORRECT!";
                 statusEl.style.color = "var(--success-color)";
-                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71'] });
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#444', '#000', '#777', '#fff'] }); // 紙吹雪も黒白モノトーンに
             }
         });
     </script>
