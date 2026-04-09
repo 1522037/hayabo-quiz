@@ -1,182 +1,19 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <title>Hayabo (ハヤボ) - スマホが早押しボタンになる無料Webアプリ</title>
-    <meta name="description" content="Hayaboは、結婚式の余興、飲み会、友達とのクイズ大会で使える無料の早押しボタンアプリです。アプリのインストール不要で、URLをシェアするだけで最大数十人の早押し判定が手軽にできます。">
-    <meta name="keywords" content="早押しボタン, 早押しアプリ, クイズ, 余興, 無料, Webアプリ, Hayabo">
-    
-    <meta property="og:title" content="Hayabo - スマホが早押しボタンになる無料Webアプリ">
-    <meta property="og:description" content="URLをシェアするだけ！アプリ不要で手軽に早押しクイズ大会ができます。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://hayabo.onrender.com/"> <meta property="og:image" content="https://hayabo.onrender.com/illust.png"> <meta property="og:site_name" content="Hayabo">
-    <meta name="google-site-verification" content="PpkVDi8ulhd2Mtdgm_grYme44IsbWAQW9d3YRSRHEVc" />
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root { 
-            --bg-color: #ffffff; 
-            --panel-bg: #ffffff; 
-            --primary-color: #000000; 
-            --primary-dark: #333333;
-            --text-color: #000000; 
-            --text-light: #666666;
-            --body-font: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; 
-            --title-font: 'Academy Engraved LET', serif; 
-        }
-        
-        body { font-family: var(--body-font); text-align: center; padding: 20px 15px; background-color: var(--bg-color); color: var(--text-color); touch-action: manipulation; margin: 0; min-height: 100vh; }
-        .screen { display: none; padding-top: 20px;} 
-        .active { display: block; animation: fadeIn 0.5s; } 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* トップページ */
-        .logo { font-family: var(--title-font); font-size: 38px; color: var(--primary-color); margin-bottom: 20px; letter-spacing: 0.05em; }
-        .logo span { font-family: var(--body-font); font-size: 14px; font-weight: bold; margin-left: 5px; letter-spacing: 0.1em; }
-        .catchphrase { font-family: var(--title-font); font-size: 26px; font-weight: normal; color: var(--primary-color); line-height: 1.6; margin-bottom: 30px; letter-spacing: 0.05em; }
-        .hero-image { width: 100%; max-width: 320px; height: auto; margin: 0 auto 30px; display: block; }
-        .desc { font-size: 15px; color: var(--text-light); line-height: 1.8; margin-bottom: 40px; font-weight: 500; }
-
-        /* LP機能紹介セクション */
-        .feature-section { margin-top: 70px; padding: 0 10px; }
-        .feature-title { font-size: 20px; color: var(--primary-color); font-weight: bold; margin-bottom: 20px; letter-spacing: 0.05em; line-height: 1.4; }
-        .feature-image { width: 100%; max-width: 340px; height: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); display: block; margin: 0 auto; border: 1px solid #eee; }
-
-        /* 使い方セクション */
-        .howto-section { margin-top: 80px; text-align: left; padding: 0 10px; }
-        .howto-title { font-size: 22px; color: var(--primary-color); font-weight: bold; margin-bottom: 30px; text-align: center; letter-spacing: 0.05em; }
-        .step-card { display: flex; align-items: flex-start; margin-bottom: 20px; background: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #eee; }
-        .step-number { font-family: var(--title-font); font-size: 22px; color: #fff; background: var(--primary-color); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 15px; }
-        .step-content h4 { margin: 0 0 8px 0; font-size: 16px; color: var(--text-color); font-weight: bold; }
-        .step-content p { margin: 0; font-size: 14px; color: var(--text-light); line-height: 1.6; }
-
-        /* フッター */
-        .footer { margin-top: 80px; padding-top: 30px; border-top: 1px solid #eee; text-align: center; padding-bottom: 20px; }
-        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .footer-links a { color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: bold; transition: color 0.2s; }
-        .footer-links a:hover { color: var(--primary-color); text-decoration: underline; }
-        .footer-copy { font-size: 12px; color: #999; }
-
-        .panel { max-width: 400px; margin: auto; background: var(--panel-bg); padding: 30px 20px; border-radius: 8px; }
-        
-        input { font-size: 16px; padding: 15px; width: 100%; box-sizing: border-box; margin-bottom: 20px; background-color: #f9f9f9; border: 1px solid #ccc; color: var(--text-color); border-radius: 4px; transition: border-color 0.3s; }
-        input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-        
-        .btn-primary { background: var(--primary-color); color: #fff; border: none; padding: 16px 60px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.1em; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.2s; } 
-        .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); background: var(--primary-dark); }
-        
-        /* ゲーム画面 */
-        .player-info { color: var(--text-light); font-size: 12px; letter-spacing: 0.2em; margin-top: 10px;} 
-        .player-name { font-family: var(--title-font); font-size: 32px; color: var(--text-color); margin-bottom: 5px; letter-spacing: 0.05em; }
-        .team-name { font-size: 14px; color: var(--text-light); font-weight: bold; margin-bottom: 15px; letter-spacing: 0.1em; }
-
-        #modeDisplay { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; letter-spacing: 0.1em; border: 1px solid #ccc; background-color: #fff; color: #333; }
-        
-        .push-btn-container { position: relative; display: inline-block; width: 220px; height: 220px; border-radius: 50%; background: conic-gradient(#eee 0deg, #fff 45deg, #eee 90deg, #f9f9f9 135deg, #fff 180deg, #eee 225deg, #f9f9f9 270deg, #fff 315deg, #eee 360deg); box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; box-sizing: border-box; margin-top: 10px; border: 1px solid #ddd; }
-        .push-btn { position: relative; display: block; width: 100%; height: 100%; font-family: var(--title-font); font-size: 36px; color: #fff; background: radial-gradient(circle at 30% 30%, #444 0%, #000 100%); border: none; border-radius: 50%; cursor: pointer; box-shadow: inset 0 5px 15px rgba(255,255,255,0.3), inset 0 -10px 20px rgba(0,0,0,0.4), 0 8px 15px rgba(0,0,0,0.3); transition: all 0.05s ease-out; outline: none; -webkit-tap-highlight-color: transparent; letter-spacing: 0.1em; user-select: none; -webkit-user-select: none; }
-        .push-btn.is-pressed { transform: scale(0.96); background: radial-gradient(circle at center, #222 0%, #000 100%); box-shadow: inset 0 4px 10px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3); }
-
-        #status { font-family: var(--title-font); font-size: 28px; margin: 25px 0; height: 35px; letter-spacing: 0.1em; color: var(--primary-color); }
-        
-        #rankingBox { background: #fff; border-radius: 8px; padding: 20px; max-width: 400px; margin: 20px auto 40px; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; }
-        #rankingBox h3 { font-family: var(--title-font); border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; color: var(--text-color); text-align: center; font-size: 18px; letter-spacing: 0.1em;}
-        .rank-item { padding: 12px 8px; border-bottom: 1px solid #eee; font-size: 16px; display: flex; justify-content: space-between; align-items: center; } 
-        .rank-item:last-child { border-bottom: none; }
-        .rank-number { font-family: var(--title-font); font-size: 20px; color: var(--primary-color); width: 40px; display: inline-block; } 
-        .rank-name { color: var(--text-color); flex: 1; text-align: left; padding-left: 10px; font-weight: bold;}
-        .time-diff { font-size: 0.8em; color: var(--text-light); margin-left: 10px; font-weight: normal; }
-    </style>
-</head>
-<body>
-    
-    <div id="topScreen" class="screen" style="max-width: 500px; margin: 0 auto; padding-top: 40px;">
-        <div class="logo">Hayabo <span>ハヤボ</span></div>
-        
-        <h2 class="catchphrase">早押しボタンを手軽に。</h2>
-        
-        <img src="/illust.png" alt="早押しクイズのイラスト" class="hero-image">
-        
-        <p class="desc">
-            Hayaboは、早押しクイズの時に<br>早押しボタンを簡単にウェブサイト上で<br>利用できる無料のサービスです。
-        </p>
-        
-        <button class="btn-primary" onclick="createRoom()">はじめる</button>
-
-        <div class="feature-section">
-            <h3 class="feature-title">友達や家族などの<br>少人数でも！</h3>
-            <img src="/friend.png" alt="少人数での利用" class="feature-image">
-        </div>
-
-        <div class="feature-section">
-            <h3 class="feature-title">結婚式や送別会などの<br>多人数でも！</h3>
-            <img src="/wedding.png" alt="多人数での利用" class="feature-image">
-        </div>
-
-        <div class="howto-section">
-            <h3 class="howto-title">1分でわかるHayaboの使い方</h3>
-            
-            <div class="step-card">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h4>ルームを作成する</h4>
-                    <p>まずは「はじめる」ボタンを押し、あなた専用のクイズルームを作成しましょう。</p>
-                </div>
-            </div>
-            
-            <div class="step-card">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h4>メンバーにシェアする</h4>
-                    <p>管理画面に表示される招待URLをコピーして、LINEなどで参加者にシェアしましょう。アプリのインストールは不要です。</p>
-                </div>
-            </div>
-            
-            <div class="step-card">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h4>メンバーを登録する</h4>
-                    <p>クイズに参加するメンバーの名前を管理画面から登録します。チーム戦の設定もここで行えます。</p>
-                </div>
-            </div>
-            
-            <div class="step-card">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <h4>早押しクイズスタート！</h4>
-                    <p>参加者がURLから入室したら準備完了！管理者のスマホやPCから正誤判定を行い、クイズを進行しましょう。</p>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top: 60px; margin-bottom: 20px;">
-            <button class="btn-primary" onclick="createRoom()">はじめる</button>
-        </div>
-
-        <footer class="footer">
-            <div class="footer-links">
-                <a href="/faq.html">よくある質問</a>
-                <a href="/contact.html">お問い合わせ</a>
-                <a href="/privacy.html">プライバシーポリシー</a>
-                <a href="/terms.html">利用規約</a>
-                <a href="/about.html">運営元情報</a>
-            </div>
-            <div class="footer-copy">
-                &copy; 2026 Hayabo. All rights reserved.
-            </div>
-        </footer>
-    </div>
-
-    <div id="loginScreen" class="screen panel">
+<div id="loginScreen" class="screen panel">
         <div class="logo">Hayabo</div>
         <p style="color:var(--text-light); font-size:14px; margin-bottom:20px; font-weight: bold;">ルームに入室</p>
         <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; margin-bottom: 25px; font-size: 15px; border: 1px solid #ccc;">
             ROOM ID: <span id="displayLoginRoom" style="font-family: var(--title-font); color: var(--primary-color); font-size: 18px;">---</span>
         </div>
-        <input type="hidden" id="loginRoom">
-        <input type="text" id="loginUser" placeholder="あなたの名前を入力" autocomplete="off">
-        <button class="btn-primary" style="width: 100%;" onclick="tryLogin()">入室する</button>
-        <p id="loginError" style="color:#c0392b; font-size:14px; font-weight: bold; margin-top: 15px;"></p>
+        
+        <div id="loginLoading" style="color: #666; font-size: 14px; margin-bottom: 20px;">ルーム情報を確認中...</div>
+        
+        <div id="loginFormArea" style="display: none;">
+            <input type="hidden" id="loginRoom">
+            <input type="text" id="loginUser" placeholder="あなたの名前を入力" autocomplete="off">
+            <select id="loginTeam" style="display: none; width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; background: #f9f9f9;"></select>
+            <button class="btn-primary" style="width: 100%;" onclick="tryLogin()">入室する</button>
+            <p id="loginError" style="color:#c0392b; font-size:14px; font-weight: bold; margin-top: 15px;"></p>
+        </div>
     </div>
 
     <div id="gameScreen" class="screen">
@@ -200,195 +37,55 @@
         const socket = io();
         
         const urlParams = new URLSearchParams(window.location.search);
+        let globalRoomId = '';
+
         if (urlParams.has('room')) {
-            const roomId = urlParams.get('room');
-            document.getElementById('loginRoom').value = roomId;
-            document.getElementById('displayLoginRoom').textContent = roomId;
+            globalRoomId = urlParams.get('room');
+            document.getElementById('loginRoom').value = globalRoomId;
+            document.getElementById('displayLoginRoom').textContent = globalRoomId;
             document.getElementById('loginScreen').classList.add('active');
+            
+            // ★追加: ログイン画面を開いた瞬間にルームのルールを確認する
+            socket.emit('check-room', globalRoomId);
         } else {
             document.getElementById('topScreen').classList.add('active');
         }
 
-        function createRoom() {
-            const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const adminKey = Math.random().toString(36).substring(2, 12);
-            window.location.href = `/admin.html?room=${newRoomId}&key=${adminKey}`;
-        }
-
-        const loginScreen = document.getElementById('loginScreen');
-        const gameScreen = document.getElementById('gameScreen');
-        const loginUser = document.getElementById('loginUser');
-        const loginError = document.getElementById('loginError');
-        const playerNameDisplay = document.getElementById('playerName');
-        const playerTeamDisplay = document.getElementById('playerTeam'); 
-        const btn = document.getElementById('buzzBtn');
-        const status = document.getElementById('status');
-        const rankingList = document.getElementById('rankingList');
-        const modeDisplay = document.getElementById('modeDisplay');
-
-        let currentUsername = '';
-        let currentTeam = ''; 
-        let lastUpdateData = null; 
-        let isCelebrating = false; 
-        let currentMode = 'queue'; 
-        let canPush = true; 
-        let isTeamModeActive = false; 
-
-        function getOrdinalSuffix(i) {
-            let j = i % 10, k = i % 100;
-            if (j == 1 && k != 11) return i + "st";
-            if (j == 2 && k != 12) return i + "nd";
-            if (j == 3 && k != 13) return i + "rd";
-            return i + "th";
-        }
-
-        socket.on('mode-changed', (mode) => {
-            currentMode = mode; 
-            if (mode === 'single') {
-                modeDisplay.textContent = '一発勝負モード'; 
+        // ★追加: ルーム情報を受け取って入力欄を切り替える
+        socket.on('room-info', (info) => {
+            document.getElementById('loginLoading').style.display = 'none';
+            document.getElementById('loginFormArea').style.display = 'block';
+            
+            const teamSelect = document.getElementById('loginTeam');
+            if (info.isTeamMode && !info.requireRegistration) {
+                // チーム戦 ＆ フリー参加ならチームを選ばせる
+                teamSelect.style.display = 'block';
+                teamSelect.innerHTML = '<option value="">あなたのチームを選択</option>';
+                info.teams.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t; opt.textContent = t;
+                    teamSelect.appendChild(opt);
+                });
             } else {
-                modeDisplay.textContent = '順番待ちモード'; 
+                teamSelect.style.display = 'none';
             }
-            if (lastUpdateData) updateCanPush(lastUpdateData);
-            renderStatus(); 
+        });
+
+        socket.on('room-error', (msg) => {
+            document.getElementById('loginLoading').textContent = msg;
+            document.getElementById('loginLoading').style.color = '#c0392b';
         });
 
         function tryLogin() {
             const room = document.getElementById('loginRoom').value;
-            const user = loginUser.value;
-            if(!user) { loginError.textContent = "名前を入力してください"; return; }
-            socket.emit('login', { roomId: room, username: user });
+            const user = document.getElementById('loginUser').value;
+            const team = document.getElementById('loginTeam').value;
+            
+            if(!user) { document.getElementById('loginError').textContent = "名前を入力してください"; return; }
+            if(document.getElementById('loginTeam').style.display === 'block' && !team) {
+                document.getElementById('loginError').textContent = "チームを選択してください"; return;
+            }
+            
+            // ★変更: チーム情報も一緒に送る
+            socket.emit('login', { roomId: room, username: user, team: team });
         }
-
-        socket.on('login-success', (data) => {
-            currentUsername = data.username;
-            currentTeam = data.team; 
-            isTeamModeActive = data.isTeamMode;
-            
-            loginScreen.classList.remove('active');
-            gameScreen.classList.add('active');
-            window.scrollTo(0, 0);
-            
-            playerNameDisplay.textContent = data.username;
-            if (isTeamModeActive && data.team) {
-                playerTeamDisplay.textContent = `${data.team}`; 
-                playerTeamDisplay.style.display = 'block';
-            } else {
-                playerTeamDisplay.style.display = 'none';
-            }
-        });
-
-        socket.on('login-fail', (msg) => { loginError.textContent = msg; });
-
-        socket.on('user-deleted', (deletedName) => {
-            if (currentUsername === deletedName) {
-                alert('管理者にユーザー登録を削除されました。トップページに戻ります。');
-                window.location.reload(); 
-            }
-        });
-
-        btn.addEventListener('pointerdown', () => btn.classList.add('is-pressed'));
-        window.addEventListener('pointerup', () => btn.classList.remove('is-pressed'));
-        window.addEventListener('pointercancel', () => btn.classList.remove('is-pressed'));
-
-        btn.addEventListener('click', () => {
-            if (canPush) {
-                socket.emit('buzz'); 
-                canPush = false; 
-            }
-        });
-        
-        function updateCanPush(data) {
-            const myListIndex = data.buzzList.findIndex(user => user.name === currentUsername);
-            const isOnlyModeLocked = (currentMode === 'single' && data.buzzList.length > 0);
-            const isPenalizedUser = data.penalizedUsers && data.penalizedUsers.includes(currentUsername);
-            const isPenalizedTeam = data.isTeamMode && data.penalizedTeams && data.penalizedTeams.includes(currentTeam);
-            
-            if (data.isLocked || isOnlyModeLocked || myListIndex !== -1 || isPenalizedUser || isPenalizedTeam) {
-                canPush = false; 
-            } else {
-                canPush = true;
-            }
-        }
-
-        function renderStatus() {
-            if (isCelebrating || !lastUpdateData) return;
-            const data = lastUpdateData;
-            const myListIndex = data.buzzList.findIndex(user => user.name === currentUsername);
-            const isPenalizedUser = data.penalizedUsers && data.penalizedUsers.includes(currentUsername);
-            const isPenalizedTeam = data.isTeamMode && data.penalizedTeams && data.penalizedTeams.includes(currentTeam);
-
-            if (myListIndex !== -1) {
-                const rank = myListIndex + 1;
-                status.textContent = `YOU ARE ${getOrdinalSuffix(rank)}!`; 
-                status.style.color = "var(--primary-color)";
-            } else if (isPenalizedUser || isPenalizedTeam) {
-                status.textContent = isPenalizedTeam ? "TEAM PENALTY" : "PENALTY..."; 
-                status.style.color = "#c0392b"; 
-            } else {
-                const isOnlyModeLocked = (currentMode === 'single' && data.buzzList.length > 0);
-                if (data.isLocked) {
-                    status.textContent = "LOCKED"; status.style.color = "#999"; 
-                } else if (isOnlyModeLocked) {
-                    status.textContent = "WAIT..."; status.style.color = "#999"; 
-                } else {
-                    status.textContent = "READY"; status.style.color = "var(--primary-color)"; 
-                }
-            }
-        }
-
-        socket.on('update', (data) => {
-            lastUpdateData = data; 
-            isTeamModeActive = data.isTeamMode;
-            if (data.buzzList.length === 0) { isCelebrating = false; }
-            
-            updateCanPush(data); 
-
-            rankingList.innerHTML = '';
-            if (data.buzzList.length === 0) {
-                rankingList.innerHTML = '<div style="text-align:center; color:#999; padding: 10px;">--- 待機中 ---</div>';
-            } else {
-                data.buzzList.forEach((user, index) => {
-                    const rankDiv = document.createElement('div');
-                    rankDiv.className = 'rank-item';
-                    let rankText = getOrdinalSuffix(index + 1);
-                    let diffHTML = (index > 0 && user.timeDiff) ? `<span class="time-diff">+${user.timeDiff}s</span>` : '';
-                    let teamBadge = (isTeamModeActive && user.team) ? `<span style="font-size:0.7em; color:#666;">(${user.team})</span>` : '';
-                    
-                    rankDiv.innerHTML = `<span class="rank-number">${rankText}</span><span class="rank-name">${user.name} ${teamBadge} ${diffHTML}</span>`;
-                    rankingList.appendChild(rankDiv);
-                });
-            }
-            renderStatus(); 
-        });
-
-        socket.on('celebrate', (winner) => {
-            isCelebrating = true; 
-            canPush = false; 
-            
-            const fireConfetti = () => {
-                const duration = 3000;
-                const end = Date.now() + duration;
-                (function frame() {
-                    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#000000', '#d4af37', '#ffffff'] }); 
-                    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#000000', '#d4af37', '#ffffff'] });
-                    if (Date.now() < end) { requestAnimationFrame(frame); }
-                }());
-            };
-
-            if (isTeamModeActive && winner.team === currentTeam) {
-                fireConfetti();
-                status.textContent = (winner.name === currentUsername) ? "CORRECT!" : "TEAM CLEAR!"; 
-                status.style.color = "var(--primary-color)"; 
-            } else if (!isTeamModeActive && winner.name === currentUsername) {
-                fireConfetti();
-                status.textContent = "CORRECT!"; 
-                status.style.color = "var(--primary-color)"; 
-            } else {
-                status.textContent = `WINNER: ${winner.name}`; 
-                status.style.color = "var(--text-color)"; 
-            }
-        });
-    </script>
-</body>
-</html>
