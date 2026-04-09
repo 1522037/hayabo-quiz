@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hayabo - ADMIN PANEL</title>
+    
+    <title>Hayabo (ハヤボ) - 管理者コントロール</title>
+    <meta name="description" content="Hayaboは、結婚式の余興、飲み会、友達とのクイズ大会で使える無料の早押しボタンアプリです。アプリのインストール不要で、URLをシェアするだけで最大数十人の早押し判定が手軽にできます。">
+    <meta name="keywords" content="早押しボタン, 早押しアプリ, クイズ, 余興, 無料, Webアプリ, Hayabo">
+    <meta property="og:title" content="Hayabo - スマホが早押しボタンになる無料Webアプリ">
+    <meta property="og:description" content="URLをシェアするだけ！アプリ不要で手軽に早押しクイズ大会ができます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hayabo.onrender.com/"> 
+    <meta property="og:image" content="https://hayabo.onrender.com/illust.png"> 
+    <meta property="og:site_name" content="Hayabo">
+    <meta name="google-site-verification" content="ここを書き換える" />
     <style>
         :root {
             --bg-color: #ffffff; --panel-bg: #ffffff; --primary-color: #000000;
@@ -55,7 +65,7 @@
         input:checked + .slider:before { transform: translateX(24px); background-color: var(--primary-color); }
         .lock-switch input:checked + .slider:before { background-color: var(--btn-wrong); }
         .scope-switch input:checked + .slider:before { background-color: #0d6efd; }
-        .reg-switch input:checked + .slider:before { background-color: #198754; } /* 登録必須スイッチ */
+        .reg-switch input:checked + .slider:before { background-color: #198754; } 
 
         ol, ul { padding-left: 0; list-style: none; margin-top: 10px; }
         li { font-size: 15px; padding: 12px 5px; border-bottom: 1px solid #eee; letter-spacing: 0.05em; color: #333; }
@@ -142,7 +152,10 @@
         <div class="panel">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
                 <h2 style="margin: 0; border: none; padding: 0;">🎮 SYSTEM CONTROL</h2>
-                <button class="join-btn" onclick="openHybridMode()">🙋‍♂️ 管理者も参加</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="copy-btn" style="margin: 0; padding: 8px 12px; width: auto; font-weight: bold;" onclick="copyUrl()">📋 URLコピー</button>
+                    <button class="join-btn" onclick="openHybridMode()">🙋‍♂️ 管理者も参加</button>
+                </div>
             </div>
             
             <div class="toggle-container">
@@ -193,7 +206,6 @@
             <div id="registrationAreaCtrl" style="display: none; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee; margin-top: 40px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
                     <h3 style="margin: 0; border: none;">👥 メンバー追加・管理</h3>
-                    <button class="copy-btn" style="margin: 0; padding: 6px 10px; font-size: 12px; width: auto;" onclick="copyUrl()">URLコピー</button>
                 </div>
                 
                 <div style="display:flex; flex-direction: column; gap:10px; margin-bottom:10px;">
@@ -269,7 +281,7 @@
             tempInput.select();
             document.execCommand('copy');
             document.body.removeChild(tempInput);
-            alert('招待URLをコピーしました！LINE等でシェアしてください。');
+            alert('招待URLをコピーしました！LINE等で参加者にシェアしてください。');
         }
 
         function goToControl() {
@@ -339,9 +351,7 @@
             }
         });
 
-        teamModeToggle.addEventListener('change', (e) => {
-            socket.emit('admin-change-team-mode', e.target.checked);
-        });
+        teamModeToggle.addEventListener('change', (e) => socket.emit('admin-change-team-mode', e.target.checked));
 
         function setTeamCount() {
             const count = parseInt(document.getElementById('teamCountInput').value);
@@ -349,9 +359,7 @@
                 socket.emit('admin-set-team-count', count);
                 document.getElementById('teamCountMsg').textContent = `${count}チーム生成済`;
                 setTimeout(() => document.getElementById('teamCountMsg').textContent = '', 3000);
-            } else {
-                alert("2から26の間で指定してください");
-            }
+            } else { alert("2から26の間で指定してください"); }
         }
 
         socket.on('teams-updated', (teams) => {
@@ -364,8 +372,7 @@
                     sel.appendChild(opt);
                 });
             };
-            updateSelect('regTeam');
-            updateSelect('ctrlRegTeam');
+            updateSelect('regTeam'); updateSelect('ctrlRegTeam');
         });
 
         const modeToggle = document.getElementById('modeToggle');
@@ -441,7 +448,6 @@
             }
         });
 
-        // ユーザー手動登録
         function registerUser(inputId, selectId) {
             const userInp = document.getElementById(inputId);
             const teamSel = document.getElementById(selectId);
@@ -451,7 +457,6 @@
             userInp.value = ''; 
         }
 
-        // CSVインポート
         function importCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -473,7 +478,7 @@
                 alert(`${count}件のデータを読み込みました！`);
             };
             reader.readAsText(file);
-            event.target.value = ''; // Reset
+            event.target.value = ''; 
         }
 
         socket.on('admin-message', (msg) => {
@@ -526,9 +531,6 @@
                 const name = prompt("早押しに参加するための「あなたの名前」を入力してください。");
                 if (!name) return;
                 adminAsPlayerName = name.trim();
-                
-                // ※チームモードON＆フリー参加の場合、管理者はチームを選べないため、
-                // 本来はログイン画面から入るのが推奨ですが、簡易的にチームなしで入室します。
                 socket.emit('login', { roomId: currentRoom, username: adminAsPlayerName, team: '' });
             }
             
