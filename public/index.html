@@ -1,25 +1,113 @@
-<div id="loginScreen" class="screen panel">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Hayabo (ハヤボ) - スマホが早押しボタンになる無料Webアプリ</title>
+    <meta name="description" content="Hayaboは、結婚式の余興、飲み会、友達とのクイズ大会で使える無料の早押しボタンアプリです。アプリのインストール不要で、URLをシェアするだけで最大数十人の早押し判定が手軽にできます。">
+    <meta name="keywords" content="早押しボタン, 早押しアプリ, クイズ, 余興, 無料, Webアプリ, Hayabo">
+    <meta property="og:title" content="Hayabo - スマホが早押しボタンになる無料Webアプリ">
+    <meta property="og:description" content="URLをシェアするだけ！アプリ不要で手軽に早押しクイズ大会ができます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hayabo.onrender.com/">
+    <meta property="og:image" content="https://hayabo.onrender.com/illust.png">
+    <meta property="og:site_name" content="Hayabo">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --panel-bg: #ffffff;
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --border-color: #e0e6ed;
+            --success-color: #2ecc71;
+            --body-font: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+            --title-font: 'Academy Engraved LET', serif;
+        }
+
+        body { font-family: var(--body-font); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        
+        .screen { display: none; width: 100%; max-width: 500px; text-align: center; }
+        .active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo { font-family: var(--title-font); font-size: 42px; color: var(--primary-color); font-weight: bold; letter-spacing: 0.05em; margin-bottom: 30px; }
+        
+        .panel { background: var(--panel-bg); padding: 30px 20px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid var(--border-color); margin-bottom: 20px; }
+        
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #fafafa; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1); }
+        
+        select { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #fafafa; outline: none; }
+
+        .btn-primary { background: var(--primary-color); color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; letter-spacing: 0.05em; }
+        .btn-primary:active { transform: scale(0.98); background: var(--secondary-color); }
+        
+        .btn-outline { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 14px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn-outline:active { background: #f0f0f0; }
+
+        /* ゲーム画面のデザイン */
+        .player-info { font-size: 12px; color: #7f8c8d; font-weight: bold; letter-spacing: 0.1em; margin-bottom: 5px; }
+        .player-name { font-size: 24px; font-weight: bold; color: var(--primary-color); margin-bottom: 5px; }
+        .team-name { font-size: 14px; color: #666; font-weight: bold; margin-bottom: 15px; }
+        #modeDisplay { display: inline-block; background: #eee; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #555; font-weight: bold; margin-bottom: 25px; }
+
+        .push-btn-container { position: relative; display: inline-block; width: 260px; height: 260px; border-radius: 50%; background: conic-gradient(#eee 0deg, #fff 45deg, #eee 90deg, #f9f9f9 135deg, #fff 180deg, #eee 225deg, #f9f9f9 270deg, #fff 315deg, #eee 360deg); box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 10px; box-sizing: border-box; margin-bottom: 30px; border: 1px solid #ddd; }
+        .push-btn { position: relative; display: block; width: 100%; height: 100%; font-family: var(--title-font); font-size: 48px; color: #fff; background: radial-gradient(circle at 30% 30%, #e74c3c 0%, #c0392b 100%); border: none; border-radius: 50%; cursor: pointer; box-shadow: inset 0 8px 20px rgba(255,255,255,0.4), inset 0 -12px 25px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.4); transition: all 0.05s ease-out; outline: none; -webkit-tap-highlight-color: transparent; letter-spacing: 0.1em; user-select: none; -webkit-user-select: none; }
+        .push-btn.is-pressed { transform: scale(0.95); background: radial-gradient(circle at center, #d35400 0%, #a23e25 100%); box-shadow: inset 0 6px 15px rgba(0,0,0,0.6), 0 3px 6px rgba(0,0,0,0.4); }
+
+        #status { font-family: var(--title-font); font-size: 32px; margin-bottom: 30px; height: 40px; letter-spacing: 0.1em; color: var(--primary-color); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        
+        #rankingBox { background: var(--panel-bg); border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-color); text-align: left; }
+        #rankingBox h3 { margin-top: 0; color: #7f8c8d; font-size: 14px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; text-align: center; letter-spacing: 0.1em; }
+        .rank-item { padding: 12px 10px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+        .rank-item:last-child { border-bottom: none; }
+        .rank-badge { background: var(--primary-color); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; }
+        .rank-name { font-weight: bold; color: var(--text-color); flex: 1; }
+        .rank-diff { color: #95a5a6; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div id="topScreen" class="screen active">
         <div class="logo">Hayabo</div>
-        <p style="color:var(--text-light); font-size:14px; margin-bottom:20px; font-weight: bold;">ルームに入室</p>
-        <div style="background: #f9f9f9; padding: 12px; border-radius: 4px; margin-bottom: 25px; font-size: 15px; border: 1px solid #ccc;">
-            ROOM ID: <span id="displayLoginRoom" style="font-family: var(--title-font); color: var(--primary-color); font-size: 18px;">---</span>
+        <div class="panel">
+            <h2 style="font-size: 18px; margin-top: 0; margin-bottom: 20px; color: var(--secondary-color);">新しいルームを作る</h2>
+            <button class="btn-primary" onclick="createRoom()">＋ ルームを新しく作る</button>
+            <p style="font-size: 12px; color: #7f8c8d; margin-top: 15px;">※作成者が管理者（司会）になります</p>
+        </div>
+        <div class="panel">
+            <h2 style="font-size: 18px; margin-top: 0; margin-bottom: 20px; color: var(--secondary-color);">既存のルームに入る</h2>
+            <input type="text" id="joinRoomId" placeholder="ROOM ID (例: AB12C)" style="text-transform: uppercase;">
+            <button class="btn-outline" onclick="joinRoomById()">ルームに入る</button>
+        </div>
+    </div>
+
+    <div id="loginScreen" class="screen panel">
+        <div class="logo">Hayabo</div>
+        <p style="color:#7f8c8d; font-size:14px; margin-bottom:20px; font-weight: bold;">ルームに入室</p>
+        <div style="background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 25px; font-size: 15px; border: 1px solid #eee;">
+            ROOM ID: <span id="displayLoginRoom" style="font-family: var(--title-font); color: var(--primary-color); font-size: 20px; font-weight: bold;">---</span>
         </div>
         
-        <div id="loginLoading" style="color: #666; font-size: 14px; margin-bottom: 20px;">ルーム情報を確認中...</div>
+        <div id="loginLoading" style="color: #666; font-size: 14px; margin-bottom: 20px; font-weight: bold;">通信中...</div>
         
         <div id="loginFormArea" style="display: none;">
             <input type="hidden" id="loginRoom">
             <input type="text" id="loginUser" placeholder="あなたの名前を入力" autocomplete="off">
-            <select id="loginTeam" style="display: none; width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; background: #f9f9f9;"></select>
-            <button class="btn-primary" style="width: 100%;" onclick="tryLogin()">入室する</button>
-            <p id="loginError" style="color:#c0392b; font-size:14px; font-weight: bold; margin-top: 15px;"></p>
+            <select id="loginTeam" style="display: none;"></select>
+            <button class="btn-primary" onclick="tryLogin()">入室する</button>
+            <p id="loginError" style="color:var(--accent-color); font-size:14px; font-weight: bold; margin-top: 15px;"></p>
         </div>
     </div>
 
     <div id="gameScreen" class="screen">
         <div class="player-info">PLAYER</div>
         <div id="playerName" class="player-name">---</div> 
-        <div id="playerTeam" class="team-name">---</div>
+        <div id="playerTeam" class="team-name"></div>
         <div id="modeDisplay">Wait...</div>
         <br>
         <div class="push-btn-container">
@@ -27,14 +115,17 @@
         </div>
         <div id="status">READY</div>
         <div id="rankingBox">
-            <h3>RANKING</h3>
-            <div id="rankingList">---</div>
+            <h3>🏆 RANKING</h3>
+            <div id="rankingList"><div style="text-align: center; color: #999; font-size: 14px; padding: 10px;">待機中...</div></div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        let myUsername = '';
+        let myTeam = '';
+        let canPush = true;
         
         const urlParams = new URLSearchParams(window.location.search);
         let globalRoomId = '';
@@ -43,22 +134,43 @@
             globalRoomId = urlParams.get('room');
             document.getElementById('loginRoom').value = globalRoomId;
             document.getElementById('displayLoginRoom').textContent = globalRoomId;
+            
+            document.getElementById('topScreen').classList.remove('active');
             document.getElementById('loginScreen').classList.add('active');
             
-            // ★追加: ログイン画面を開いた瞬間にルームのルールを確認する
+            // ルームのルール（事前登録ONか、チーム戦か）を確認
             socket.emit('check-room', globalRoomId);
-        } else {
-            document.getElementById('topScreen').classList.add('active');
         }
 
-        // ★追加: ルーム情報を受け取って入力欄を切り替える
+        // ルーム作成
+        function generateId(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        function createRoom() {
+            const roomId = generateId(5);
+            const adminKey = generateId(10);
+            window.location.href = `/admin.html?room=${roomId}&key=${adminKey}`;
+        }
+
+        function joinRoomById() {
+            const roomId = document.getElementById('joinRoomId').value.trim().toUpperCase();
+            if (roomId) { window.location.href = `/?room=${roomId}`; }
+        }
+
+        // ログイン画面の処理
         socket.on('room-info', (info) => {
             document.getElementById('loginLoading').style.display = 'none';
             document.getElementById('loginFormArea').style.display = 'block';
             
             const teamSelect = document.getElementById('loginTeam');
             if (info.isTeamMode && !info.requireRegistration) {
-                // チーム戦 ＆ フリー参加ならチームを選ばせる
+                // チーム戦 ＆ フリー参加なら自分でチームを選ぶ
                 teamSelect.style.display = 'block';
                 teamSelect.innerHTML = '<option value="">あなたのチームを選択</option>';
                 info.teams.forEach(t => {
@@ -73,12 +185,12 @@
 
         socket.on('room-error', (msg) => {
             document.getElementById('loginLoading').textContent = msg;
-            document.getElementById('loginLoading').style.color = '#c0392b';
+            document.getElementById('loginLoading').style.color = 'var(--accent-color)';
         });
 
         function tryLogin() {
             const room = document.getElementById('loginRoom').value;
-            const user = document.getElementById('loginUser').value;
+            const user = document.getElementById('loginUser').value.trim();
             const team = document.getElementById('loginTeam').value;
             
             if(!user) { document.getElementById('loginError').textContent = "名前を入力してください"; return; }
@@ -86,6 +198,124 @@
                 document.getElementById('loginError').textContent = "チームを選択してください"; return;
             }
             
-            // ★変更: チーム情報も一緒に送る
+            document.getElementById('loginError').textContent = "接続中...";
             socket.emit('login', { roomId: room, username: user, team: team });
         }
+
+        socket.on('login-fail', (msg) => {
+            document.getElementById('loginError').textContent = msg;
+        });
+
+        socket.on('login-success', (data) => {
+            myUsername = data.username;
+            myTeam = data.team || '';
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            
+            document.getElementById('playerName').textContent = myUsername;
+            if (data.isTeamMode && myTeam) {
+                document.getElementById('playerTeam').textContent = `(${myTeam})`;
+            }
+        });
+
+        socket.on('mode-changed', (mode) => {
+            document.getElementById('modeDisplay').textContent = (mode === 'single') ? '一発勝負モード' : '順番待ちモード';
+        });
+
+        // ボタンの処理
+        const buzzBtn = document.getElementById('buzzBtn');
+        const statusEl = document.getElementById('status');
+
+        buzzBtn.addEventListener('touchstart', (e) => { e.preventDefault(); pushButton(); }, {passive: false});
+        buzzBtn.addEventListener('mousedown', (e) => { e.preventDefault(); pushButton(); });
+        
+        window.addEventListener('touchend', () => buzzBtn.classList.remove('is-pressed'));
+        window.addEventListener('mouseup', () => buzzBtn.classList.remove('is-pressed'));
+
+        function pushButton() {
+            buzzBtn.classList.add('is-pressed');
+            if (canPush) {
+                socket.emit('buzz');
+                canPush = false;
+            }
+        }
+
+        function getOrdinalSuffix(i) {
+            let j = i % 10, k = i % 100;
+            if (j == 1 && k != 11) return i + "st";
+            if (j == 2 && k != 12) return i + "nd";
+            if (j == 3 && k != 13) return i + "rd";
+            return i + "th";
+        }
+
+        socket.on('update', (data) => {
+            const list = document.getElementById('rankingList');
+            const modeDisplay = document.getElementById('modeDisplay');
+            const isSingleMode = modeDisplay.textContent === '一発勝負モード';
+
+            const myListIndex = data.buzzList.findIndex(user => user.name === myUsername);
+            const isOnlyModeLocked = (isSingleMode && data.buzzList.length > 0);
+            const isPenalizedUser = data.penalizedUsers && data.penalizedUsers.includes(myUsername);
+            const isPenalizedTeam = data.isTeamMode && data.penalizedTeams && data.penalizedTeams.includes(myTeam);
+
+            // ボタンの有効無効
+            if (data.isLocked || isOnlyModeLocked || myListIndex !== -1 || isPenalizedUser || isPenalizedTeam) {
+                canPush = false;
+            } else {
+                canPush = true;
+            }
+
+            // ステータス表示
+            if (myListIndex !== -1) {
+                const rank = myListIndex + 1;
+                statusEl.textContent = `YOU ARE ${getOrdinalSuffix(rank)}!`;
+                statusEl.style.color = "var(--success-color)";
+            } else if (isPenalizedUser || isPenalizedTeam) {
+                statusEl.textContent = "PENALTY...";
+                statusEl.style.color = "var(--accent-color)";
+            } else {
+                if (data.isLocked) {
+                    statusEl.textContent = "LOCKED"; statusEl.style.color = "#95a5a6";
+                } else if (isOnlyModeLocked) {
+                    statusEl.textContent = "WAIT..."; statusEl.style.color = "#95a5a6";
+                } else {
+                    statusEl.textContent = "READY"; statusEl.style.color = "var(--primary-color)";
+                }
+            }
+
+            // ランキング更新
+            list.innerHTML = '';
+            if (data.buzzList.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #999; font-size: 14px; padding: 10px;">待機中...</div>';
+            } else {
+                data.buzzList.forEach((user, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'rank-item';
+                    
+                    let timeDiffStr = '';
+                    if (index > 0 && user.timeDiff) { timeDiffStr = `<span class="rank-diff">+${user.timeDiff}s</span>`; }
+                    
+                    let teamStr = (data.isTeamMode && user.team) ? `<span style="font-size: 11px; color: #7f8c8d; margin-left: 5px;">(${user.team})</span>` : '';
+
+                    div.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <span class="rank-badge">${index + 1}</span>
+                            <span class="rank-name">${user.name} ${teamStr}</span>
+                        </div>
+                        ${timeDiffStr}
+                    `;
+                    list.appendChild(div);
+                });
+            }
+        });
+
+        socket.on('celebrate', (winner) => {
+            if (myUsername === winner.name) {
+                statusEl.textContent = "CORRECT!";
+                statusEl.style.color = "var(--success-color)";
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71'] });
+            }
+        });
+    </script>
+</body>
+</html>
