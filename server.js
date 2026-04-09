@@ -24,7 +24,8 @@ function getRoom(id) {
             isTeamMode: false,
             teams: [],
             penalizedUsers: [],
-            penalizedTeams: []
+            penalizedTeams: [],
+            requireRegistration: false // ★追加: 事前登録必須かどうかのフラグ（デフォルトOFF）
         };
     }
     return rooms[id];
@@ -43,6 +44,20 @@ function emitUpdate(roomId) {
 
 io.on('connection', (socket) => {
     
+    // ★追加: ログイン画面を開いた時にルーム情報を取得する
+    socket.on('check-room', (roomId) => {
+        const r = rooms[roomId];
+        if (r) {
+            socket.emit('room-info', { 
+                isTeamMode: r.isTeamMode, 
+                teams: r.teams, 
+                requireRegistration: r.requireRegistration 
+            });
+        } else {
+            socket.emit('room-error', 'ルームが存在しません');
+        }
+    });
+
     socket.on('admin-join', ({ roomId, adminKey }) => {
         const r = getRoom(roomId);
         
@@ -61,8 +76,16 @@ io.on('connection', (socket) => {
         socket.emit('penalty-scope-changed', r.penaltyScope);
         socket.emit('team-mode-changed', r.isTeamMode);
         socket.emit('teams-updated', r.teams);
+        socket.emit('registration-req-changed', r.requireRegistration); // ★追加
         socket.emit('admin-update-users', r.users);
         emitUpdate(roomId);
+    });
+
+    // ★追加: 事前登録ON/OFFの切り替え
+    socket.on('admin-toggle-registration', (isRequired) => {
+        const r = getRoom(socket.roomId);
+        r.requireRegistration = isRequired;
+        io.to(socket.roomId).emit('registration-req-changed', r.requireRegistration);
     });
 
     socket.on('admin-register-user', ({ username, team }) => {
@@ -77,13 +100,12 @@ io.on('connection', (socket) => {
         }
     });
 
-    // ★追加: ユーザーの削除処理
     socket.on('admin-delete-user', (username) => {
         const r = getRoom(socket.roomId);
         if (r.users[username]) {
             delete r.users[username];
             io.to(socket.roomId).emit('admin-update-users', r.users);
-            io.to(socket.roomId).emit('user-deleted', username); // 参加者側に通知して強制退室させる
+            io.to(socket.roomId).emit('user-deleted', username);
             socket.emit('admin-message', `「${username}」を削除しました`);
         }
     });
@@ -172,17 +194,30 @@ io.on('connection', (socket) => {
     });
 
     // --- 参加者側の通信 ---
-    socket.on('login', ({ roomId, username }) => {
+    socket.on('login', ({ roomId, username, team }) => {
         const r = getRoom(roomId);
-        if (r && r.users[username]) {
+        if (!r) return socket.emit('login-fail', 'ルームが存在しません');
+
+        // ★変更: 事前登録OFFの場合は、ここで自動的にユーザー登録を行う
+        if (!r.requireRegistration) {
+            if (!r.users[username]) {
+                r.users[username] = { team: r.isTeamMode ? team : '' };
+                io.to(roomId).emit('admin-update-users', r.users);
+            } else if (r.isTeamMode && team && r.users[username].team !== team) {
+                // すでに同じ名前の人がいて、チームが違う場合は弾く（なりすまし防止）
+                 return socket.emit('login-fail', 'その名前はすでに使用されています');
+            }
+        }
+
+        if (r.users[username]) {
             socket.join(roomId);
             socket.roomId = roomId;
-            const team = r.isTeamMode ? r.users[username].team : '';
-            r.loggedInUsers[socket.id] = { name: username, team: team };
-            socket.emit('login-success', { username, team, isTeamMode: r.isTeamMode });
+            const finalTeam = r.isTeamMode ? r.users[username].team : '';
+            r.loggedInUsers[socket.id] = { name: username, team: finalTeam };
+            socket.emit('login-success', { username, team: finalTeam, isTeamMode: r.isTeamMode });
             emitUpdate(roomId);
         } else {
-            socket.emit('login-fail', 'ユーザー名が登録されていません');
+            socket.emit('login-fail', '事前登録が必要です。管理者に確認してください。');
         }
     });
 
@@ -192,7 +227,6 @@ io.on('connection', (socket) => {
         const r = getRoom(roomId);
         const user = r.loggedInUsers[socket.id];
         
-        // ★ユーザーが存在しない、または削除されている場合は弾く
         if (!user || !r.users[user.name]) return; 
 
         if (r.penalizedUsers.includes(user.name) || r.penalizedTeams.includes(user.team)) return;
@@ -224,11 +258,8 @@ io.on('connection', (socket) => {
     });
 });
 
-// ▼▼▼ ここから下を上書き ▼▼▼
-
-// 診断用のテストURL（サーバーが生きているか確認するため）
-app.get('/ping', (req, res) => {
-    res.send('サーバーは正常に動いています！（通信大成功🎉）');
+app.get('/health', (req, res) => {
+    res.status(200).send('Server is alive!');
 });
 
 const PORT = process.env.PORT || 10000;
