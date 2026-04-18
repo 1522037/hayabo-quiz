@@ -5,7 +5,15 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-
+app.use((req, res, next) => {
+    // もしアクセスしてきたURLのドメインが旧ドメインだったら
+    if (req.headers.host === 'hayabo.onrender.com') {
+        // HTTPステータス301（恒久的な移動）で、新しいドメインの同じページに転送する
+        return res.redirect(301, `https://hayabo.jp${req.url}`);
+    }
+    // 旧ドメイン以外（すでにhayabo.jp）からのアクセスなら、そのまま次の処理へ進む
+    next();
+});
 app.use(express.static('public'));
 
 const rooms = {};
